@@ -1,0 +1,92 @@
+--- source/pkg/cloudclient/client_test.go
++++ local-next/pkg/cloudclient/client_test.go
+@@ -121,9 +121,12 @@
+ 	if err != nil || result.Workflow.Status != "succeeded" || calls.Load() != 3 {
+ 		t.Fatalf("workflow wait: result=%+v err=%v calls=%d", result, err, calls.Load())
+ 	}
+-	ctx2, cancel2 := context.WithTimeout(context.Background(), time.Nanosecond)
++	ctx2, cancel2 := context.WithDeadline(context.Background(), time.Now().Add(-time.Second))
+ 	defer cancel2()
+ 	if _, err := client.WaitWorkflow(ctx2, 91, time.Millisecond); !errors.Is(err, context.DeadlineExceeded) {
+ 		t.Fatalf("expected context deadline, got %v", err)
+ 	}
++	if calls.Load() != 3 {
++		t.Fatalf("expired wait reached network: %d", calls.Load())
++	}
+ }
+--- source/cmd/taskflowctl/main.go
++++ local-next/cmd/taskflowctl/main.go
+@@ -14,6 +14,7 @@
+ 	"net/url"
+ 	"os"
+ 	"os/signal"
++	"runtime"
+ 	"strconv"
+ 	"strings"
+ 	"syscall"
+@@ -26,7 +27,7 @@
+ 
+ Global flags (before command):
+   -endpoint URL     TaskFlow API (HTTPS required except 127.0.0.1/localhost)
+-  -token-file PATH  File containing an OIDC access token; mode 0600
++  -token-file PATH  POSIX token file, mode 0600; use environment on Windows
+   -timeout          HTTP operation timeout (default 20s)
+ 
+ Commands:
+@@ -45,6 +46,8 @@
+ The -key flag is accepted before or after positional arguments for mutations.
+ The token may instead be supplied through TASKFLOW_ACCESS_TOKEN environment
+ variable. A business-stable idempotency key is mandatory for every mutation.
++Windows supports TASKFLOW_ACCESS_TOKEN; -token-file is not supported there
++because this client does not validate Windows ACLs.
+ All output is JSON and never includes the bearer token.
+ `
+ 
+@@ -242,6 +245,9 @@
+ 				return "", errors.New("set TASKFLOW_ACCESS_TOKEN or -token-file with a short-lived OIDC token")
+ 			}
+ 			return t, nil
++		}
++		if runtime.GOOS == "windows" {
++			return "", errors.New("-token-file requires POSIX permissions and is unavailable on Windows; use TASKFLOW_ACCESS_TOKEN")
+ 		}
+ 		info, err := os.Stat(filename)
+ 		if err != nil {
+--- source/cmd/taskflowctl/main_test.go
++++ local-next/cmd/taskflowctl/main_test.go
+@@ -7,6 +7,7 @@
+ 	"net/http/httptest"
+ 	"os"
+ 	"path/filepath"
++	"runtime"
+ 	"strings"
+ 	"testing"
+ )
+@@ -91,6 +92,14 @@
+ 	if err := os.WriteFile(f, []byte("abc\n"), 0644); err != nil {
+ 		t.Fatal(err)
+ 	}
++	if runtime.GOOS == "windows" {
++		t.Setenv("TASKFLOW_ACCESS_TOKEN", "must-not-fallback")
++		got, err := tokenSource(f)(nil)
++		if err == nil || got != "" || !strings.Contains(err.Error(), "TASKFLOW_ACCESS_TOKEN") {
++			t.Fatalf("Windows token file must be rejected with actionable guidance: %q %v", got, err)
++		}
++		return
++	}
+ 	if _, err := tokenSource(f)(nil); err == nil || !strings.Contains(err.Error(), "chmod 600") {
+ 		t.Errorf("file mode should fail: %v", err)
+ 	}
+--- source/docs/CLOUD_ORDER_OPERATOR_WORKFLOW.md
++++ local-next/docs/CLOUD_ORDER_OPERATOR_WORKFLOW.md
+@@ -20,6 +20,10 @@
+ quotas, validates all resource IDs and spec JSON, has bounded timeouts,
+ returns non-zero on HTTP 401/403/404/409/5xx, and never retries writes
+ automatically. `pkg/cloudclient` handles endpoint requests and typed errors.
++
++On Windows, use `TASKFLOW_ACCESS_TOKEN`. The CLI rejects `-token-file`
++because its POSIX mode check cannot validate Windows ACLs. An invalid file
++option does not silently fall back to an environment token.
+ 
+ ## A real tenant order lifecycle
+ 

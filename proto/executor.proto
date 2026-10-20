@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package taskflow.executor.v1;
+
+import "google/protobuf/struct.proto";
+
+option go_package = "github.com/yfj898/taskflow-go/internal/rpc;rpc";
+
+// ExecutorService uses protobuf Struct so the internal RPC envelope can evolve
+// independently from the persisted task model while still using protobuf wire encoding.
+service ExecutorService {
+  rpc Execute(google.protobuf.Struct) returns (google.protobuf.Struct);
+}

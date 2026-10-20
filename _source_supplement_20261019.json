@@ -1,0 +1,33 @@
+{
+	"source_kind": "existing_workspace_files_ignored_and_untracked",
+	"source_note": "The six files were read from the source workspace filesystem. source_commit is the workspace HEAD context; these files are not present in git ls-files and are not claimed as commit contents.",
+  "source_commit": "ef1d68176f07dc9285d633f1f93549e6dbfb8b4a",
+  "date": "2026-10-19",
+  "source_root": "/media/bili-guo/1235578e-e896-4ce5-9fdc-6318e4960f4c3/any/taskflow-go",
+  "files": [
+    {
+      "path": "cmd/server/main.go",
+      "bytes": 42081
+    },
+    {
+      "path": "cmd/executor-worker/main.go",
+      "bytes": 7350
+    },
+    {
+      "path": "cmd/gpuflow-server/main.go",
+      "bytes": 10082
+    },
+    {
+      "path": "cmd/gpuflow-bench/main.go",
+      "bytes": 2613
+    },
+    {
+      "path": "cmd/gpuflow-fairness-bench/main.go",
+      "bytes": 2628
+    },
+    {
+      "path": "scripts/ai-phase10-client/main.go",
+      "bytes": 2537
+    }
+  ]
+}

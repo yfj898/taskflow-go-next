@@ -1,0 +1,72 @@
+# Production-mode TLS reference deployment. Not HA/production-certified.
+# Secrets and certificates are injected at deploy time; never commit them.
+# The public listener is loopback-only for the isolated acceptance rehearsal.
+name: taskflow-keycloak-secure
+
+services:
+  database:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD_FILE: /run/secrets/keycloak_db_password
+    secrets:
+      - keycloak_db_password
+    volumes:
+      - keycloak_secure_db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U keycloak -d keycloak"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+    security_opt:
+      - no-new-privileges:true
+    networks: [private_db]
+
+  keycloak:
+    image: keycloak/keycloak:26.8.0
+    restart: unless-stopped
+    # Never use start-dev for this production-mode rehearsal.
+    command: ["start", "--server-async-bootstrap=false"]
+    environment:
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://database:5432/keycloak
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: ${KEYCLOAK_SECURE_DB_PASSWORD:?provide DB password from secrets manager}
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_SECURE_ADMIN_USERNAME:-keycloak-breakglass-admin}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_SECURE_ADMIN_PASSWORD:?provide bootstrap admin secret from manager}
+      KC_HOSTNAME: ${KEYCLOAK_SECURE_PUBLIC_URL:?set an explicit https issuer URL}
+      KC_HOSTNAME_STRICT: "true"
+      KC_HTTP_ENABLED: "false"
+      KC_HTTPS_CERTIFICATE_FILE: /opt/keycloak/conf/tls/tls.crt
+      KC_HTTPS_CERTIFICATE_KEY_FILE: /opt/keycloak/conf/tls/tls.key
+      KC_HEALTH_ENABLED: "true"
+      KC_METRICS_ENABLED: "true"
+      KC_HTTP_MANAGEMENT_SCHEME: http
+      KC_HTTP_MAX_QUEUED_REQUESTS: "500"
+      JAVA_OPTS_KC_HEAP: "-XX:InitialRAMPercentage=20 -XX:MaxRAMPercentage=65"
+    volumes:
+      - ${KEYCLOAK_SECURE_TLS_DIR:?mount protected PEM cert and key}:/opt/keycloak/conf/tls:ro
+    ports:
+      - "127.0.0.1:${KEYCLOAK_SECURE_HOST_PORT:-18443}:8443"
+    pids_limit: 512
+    mem_limit: 2g
+    security_opt:
+      - no-new-privileges:true
+    depends_on:
+      database:
+        condition: service_healthy
+    networks: [private_db, private_frontend]
+
+secrets:
+  keycloak_db_password:
+    file: ${KEYCLOAK_SECURE_DB_PASSWORD_FILE:?set protected DB secret file path}
+
+volumes:
+  keycloak_secure_db:
+
+networks:
+  private_db:
+    internal: true
+  private_frontend: {}

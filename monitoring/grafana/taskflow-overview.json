@@ -1,0 +1,70 @@
+{
+  "annotations": {"list": []},
+  "editable": false,
+  "graphTooltip": 1,
+  "panels": [
+    {
+      "type": "stat",
+      "title": "HTTP availability (5m)",
+      "id": 1,
+      "gridPos": {"h": 7, "w": 6, "x": 0, "y": 0},
+      "targets": [{"expr": "taskflow:slo:http_availability:ratio5m", "refId": "A"}]
+    },
+    {
+      "type": "stat",
+      "title": "HTTP p99 latency (5m)",
+      "id": 2,
+      "gridPos": {"h": 7, "w": 6, "x": 6, "y": 0},
+      "targets": [{"expr": "taskflow:slo:http_p99_latency_seconds:5m", "refId": "A"}]
+    },
+    {
+      "type": "timeseries",
+      "title": "Queue backlog and freshness",
+      "id": 3,
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 7},
+      "targets": [
+        {"expr": "taskflow_queue_backlog", "legendFormat": "backlog", "refId": "A"},
+        {"expr": "taskflow_queue_stats_fresh", "legendFormat": "fresh", "refId": "B"}
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Governance safety fences",
+      "id": 4,
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 7},
+      "targets": [
+        {"expr": "taskflow_control_plane_siem_governance_debt_fenced", "legendFormat": "debt fence", "refId": "A"},
+        {"expr": "taskflow_control_plane_siem_governance_replica_receipt_debt", "legendFormat": "replica receipt debt", "refId": "B"}
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Cloud Saga backlog and lease contention",
+      "id": 5,
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 15},
+      "targets": [
+        {"expr": "taskflow_cloud_saga_runnable_workflows", "legendFormat": "runnable workflows", "refId": "A"},
+        {"expr": "sum by (outcome) (rate(taskflow_cloud_saga_workflow_claims_total[5m]))", "legendFormat": "claim {{outcome}}", "refId": "B"}
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Cloud Saga provider steps",
+      "id": 6,
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 15},
+      "targets": [
+        {"expr": "sum by (kind,step,direction,outcome) (rate(taskflow_cloud_saga_step_operations_total[5m]))", "legendFormat": "{{kind}} {{step}} {{direction}} {{outcome}}", "refId": "A"},
+        {"expr": "histogram_quantile(0.95, sum by (le,kind,step,direction) (rate(taskflow_cloud_saga_step_duration_seconds_bucket[5m])))", "legendFormat": "p95 {{kind}} {{step}} {{direction}}", "refId": "B"}
+      ]
+    }
+  ],
+  "refresh": "10s",
+  "schemaVersion": 39,
+  "tags": ["taskflow", "slo"],
+  "templating": {"list": []},
+  "time": {"from": "now-6h", "to": "now"},
+  "timezone": "browser",
+  "title": "TaskFlow Production Overview",
+  "uid": "taskflow-production-overview",
+  "version": 2
+}

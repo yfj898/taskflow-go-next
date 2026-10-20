@@ -1,0 +1,58 @@
+# Optional alternative to hpa.yaml. Requires KEDA and a Prometheus service.
+# Do not apply this together with the CPU HPA for the same Deployment.
+#
+# Phase 12 intentionally refuses to scale from stale queue data. The PromQL
+# query returns no sample when queue collection is unhealthy or older than 30s.
+# ignoreNullValues=false converts that empty result into a scaler error, and
+# KEDA's fallback keeps a conservative number of workers until metrics recover.
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: taskflow-queue-scaler
+spec:
+  scaleTargetRef:
+    name: taskflow
+  minReplicaCount: 2
+  maxReplicaCount: 10
+  pollingInterval: 15
+  cooldownPeriod: 60
+  fallback:
+    failureThreshold: 3
+    replicas: 4
+  advanced:
+    horizontalPodAutoscalerConfig:
+      behavior:
+        scaleUp:
+          stabilizationWindowSeconds: 0
+          selectPolicy: Max
+          policies:
+            - type: Percent
+              value: 100
+              periodSeconds: 15
+            - type: Pods
+              value: 4
+              periodSeconds: 15
+        scaleDown:
+          # Queue depth can collapse much faster than in-flight tasks finish.
+          # Hold capacity before removing consumers to avoid scale oscillation.
+          stabilizationWindowSeconds: 300
+          selectPolicy: Max
+          policies:
+            - type: Percent
+              value: 25
+              periodSeconds: 60
+  triggers:
+    - type: prometheus
+      metadata:
+        # KEDA normally runs in its own namespace. Use the full service DNS
+        # name so the operator does not accidentally resolve prometheus.keda.
+        # Change `default` if these example manifests are installed elsewhere.
+        serverAddress: http://prometheus.default.svc.cluster.local:9090
+        metricName: taskflow_queue_backlog
+        threshold: "100"
+        activationThreshold: "10"
+        ignoreNullValues: "false"
+        query: >-
+          max(taskflow_queue_backlog)
+          and on() (max(taskflow_queue_stats_fresh) == 1)
+          and on() ((time() - max(taskflow_queue_stats_last_success_timestamp_seconds)) < 30)

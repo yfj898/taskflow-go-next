@@ -1,0 +1,85 @@
+name: Supply Chain
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - name: Build local release candidate
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          load: true
+          tags: taskflow-go:supply-chain-ci
+          build-args: |
+            VERSION=${{ github.sha }}
+            REVISION=${{ github.sha }}
+            SOURCE=${{ github.server_url }}/${{ github.repository }}
+      - name: Generate SPDX SBOM
+        uses: anchore/sbom-action@v0.20.6
+        with:
+          image: taskflow-go:supply-chain-ci
+          format: spdx-json
+          output-file: taskflow.spdx.json
+      - name: Critical vulnerability gate
+        uses: aquasecurity/trivy-action@0.33.1
+        with:
+          image-ref: taskflow-go:supply-chain-ci
+          severity: CRITICAL
+          ignore-unfixed: true
+          exit-code: "1"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: taskflow-spdx-sbom
+          path: taskflow.spdx.json
+
+  sign-and-attest:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: scan
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+      attestations: write
+    env:
+      IMAGE: ghcr.io/${{ github.repository_owner }}/taskflow-go
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build and push immutable candidate
+        id: build
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ${{ env.IMAGE }}:${{ github.sha }}
+          provenance: mode=max
+          sbom: true
+          build-args: |
+            VERSION=${{ github.sha }}
+            REVISION=${{ github.sha }}
+            SOURCE=${{ github.server_url }}/${{ github.repository }}
+      - uses: sigstore/cosign-installer@v3.9.2
+      - name: Keyless sign digest with GitHub OIDC
+        run: cosign sign --yes "${IMAGE}@${{ steps.build.outputs.digest }}"
+      - name: Attest build provenance
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-name: ${{ env.IMAGE }}
+          subject-digest: ${{ steps.build.outputs.digest }}
+          push-to-registry: true

@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: taskflow-dlq-archive
+spec:
+  # Two TaskFlow replicas may archive concurrently. Use a storage class that
+  # actually supports RWX; otherwise select the HTTP/object-store sink instead.
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi

@@ -1,0 +1,175 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-09-07T15:44:43.343898+00:00",
+  "run_count": 5,
+  "conditions": {
+    "concurrency": 100,
+    "duration_s_median": 15.017
+  },
+  "aggregates": {
+    "requests": {
+      "median": 86835.0,
+      "mean": 85510.8,
+      "min": 80192.0,
+      "max": 87718.0,
+      "sample_variance": 9753588.7,
+      "stddev": 3123.073598236199,
+      "cv_pct": 3.6522563211152264
+    },
+    "rps": {
+      "median": 5781.98,
+      "mean": 5694.308,
+      "min": 5340.72,
+      "max": 5841.24,
+      "sample_variance": 43141.387569999926,
+      "stddev": 207.70504945715675,
+      "cv_pct": 3.647590707372287
+    },
+    "latency_avg_ms": {
+      "median": 17.277,
+      "mean": 17.564799999999998,
+      "min": 17.104,
+      "max": 18.709,
+      "sample_variance": 0.44596469999999994,
+      "stddev": 0.667805884969577,
+      "cv_pct": 3.801955530205736
+    },
+    "latency_p50_ms": {
+      "median": 16.433,
+      "mean": 16.4972,
+      "min": 16.264,
+      "max": 16.857,
+      "sample_variance": 0.05180119999999992,
+      "stddev": 0.22759876976820398,
+      "cv_pct": 1.379620600878961
+    },
+    "latency_p95_ms": {
+      "median": 26.816,
+      "mean": 27.9598,
+      "min": 26.568,
+      "max": 32.241,
+      "sample_variance": 5.848902699999999,
+      "stddev": 2.4184504749942675,
+      "cv_pct": 8.64974168268109
+    },
+    "latency_p99_ms": {
+      "median": 36.29,
+      "mean": 38.936,
+      "min": 34.436,
+      "max": 50.213,
+      "sample_variance": 41.2411595,
+      "stddev": 6.421928020462391,
+      "cv_pct": 16.493548439650688
+    },
+    "latency_max_ms": {
+      "median": 82.18,
+      "mean": 137.8708,
+      "min": 67.182,
+      "max": 246.387,
+      "sample_variance": 7623.115415699999,
+      "stddev": 87.31045421769377,
+      "cv_pct": 63.327734529497015
+    }
+  },
+  "status_totals": {
+    "201": 427554
+  },
+  "error_totals": {},
+  "runs": [
+    {
+      "run": 1,
+      "source": "perf/post-phase21-fixed-hardware-20260907/run-1/load.json",
+      "concurrency": 100,
+      "duration_s": 15.018,
+      "metrics": {
+        "requests": 86835.0,
+        "rps": 5781.98,
+        "latency_avg_ms": 17.277,
+        "latency_p50_ms": 16.433,
+        "latency_p95_ms": 26.816,
+        "latency_p99_ms": 36.29,
+        "latency_max_ms": 82.18
+      },
+      "status": {
+        "201": 86835
+      },
+      "errors": {}
+    },
+    {
+      "run": 2,
+      "source": "perf/post-phase21-fixed-hardware-20260907/run-2/load.json",
+      "concurrency": 100,
+      "duration_s": 15.015,
+      "metrics": {
+        "requests": 80192.0,
+        "rps": 5340.72,
+        "latency_avg_ms": 18.709,
+        "latency_p50_ms": 16.857,
+        "latency_p95_ms": 32.241,
+        "latency_p99_ms": 50.213,
+        "latency_max_ms": 246.387
+      },
+      "status": {
+        "201": 80192
+      },
+      "errors": {}
+    },
+    {
+      "run": 3,
+      "source": "perf/post-phase21-fixed-hardware-20260907/run-3/load.json",
+      "concurrency": 100,
+      "duration_s": 15.016,
+      "metrics": {
+        "requests": 87523.0,
+        "rps": 5828.59,
+        "latency_avg_ms": 17.142,
+        "latency_p50_ms": 16.373,
+        "latency_p95_ms": 26.568,
+        "latency_p99_ms": 34.436,
+        "latency_max_ms": 67.182
+      },
+      "status": {
+        "201": 87523
+      },
+      "errors": {}
+    },
+    {
+      "run": 4,
+      "source": "perf/post-phase21-fixed-hardware-20260907/run-4/load.json",
+      "concurrency": 100,
+      "duration_s": 15.017,
+      "metrics": {
+        "requests": 87718.0,
+        "rps": 5841.24,
+        "latency_avg_ms": 17.104,
+        "latency_p50_ms": 16.264,
+        "latency_p95_ms": 26.701,
+        "latency_p99_ms": 35.868,
+        "latency_max_ms": 74.488
+      },
+      "status": {
+        "201": 87718
+      },
+      "errors": {}
+    },
+    {
+      "run": 5,
+      "source": "perf/post-phase21-fixed-hardware-20260907/run-5/load.json",
+      "concurrency": 100,
+      "duration_s": 15.018,
+      "metrics": {
+        "requests": 85286.0,
+        "rps": 5679.01,
+        "latency_avg_ms": 17.592,
+        "latency_p50_ms": 16.559,
+        "latency_p95_ms": 27.473,
+        "latency_p99_ms": 37.873,
+        "latency_max_ms": 219.117
+      },
+      "status": {
+        "201": 85286
+      },
+      "errors": {}
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+name: taskflow-keycloak-lab
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: taskflow-keycloak-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: ${KEYCLOAK_DB_PASSWORD:?set KEYCLOAK_DB_PASSWORD}
+    volumes:
+      - keycloak_db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U keycloak -d keycloak"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    networks: [keycloak_lab]
+
+  keycloak:
+    # Official Keycloak-published Docker Hub image; same upstream Keycloak
+    # version when quay.io is unreachable from this host.
+    image: keycloak/keycloak:26.8.0
+    container_name: taskflow-keycloak
+    restart: unless-stopped
+    command: ["start-dev", "--import-realm", "--hostname=http://127.0.0.1:18090"]
+    environment:
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres:5432/keycloak
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: ${KEYCLOAK_DB_PASSWORD:?set KEYCLOAK_DB_PASSWORD}
+      KC_BOOTSTRAP_ADMIN_USERNAME: taskflow-lab-admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:?set KEYCLOAK_ADMIN_PASSWORD}
+      KC_HEALTH_ENABLED: "true"
+      KC_METRICS_ENABLED: "true"
+      JAVA_OPTS_KC_HEAP: "-XX:InitialRAMPercentage=20 -XX:MaxRAMPercentage=60"
+    volumes:
+      - ./realm-taskflow-lab.json:/opt/keycloak/data/import/realm-taskflow-lab.json:ro
+    ports:
+      - "127.0.0.1:18090:8080"
+    mem_limit: 2g
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks: [keycloak_lab]
+
+volumes:
+  keycloak_db:
+
+networks:
+  keycloak_lab:
+    name: taskflow-keycloak-lab-net

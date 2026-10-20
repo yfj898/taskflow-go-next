@@ -1,0 +1,114 @@
+groups:
+  - name: taskflow-slo-recording
+    interval: 30s
+    rules:
+      - record: taskflow:slo:http_availability:ratio5m
+        expr: |
+          1 - (
+            sum(rate(taskflow_http_requests_total{status=~"5.."}[5m]))
+            /
+            clamp_min(sum(rate(taskflow_http_requests_total[5m])), 0.001)
+          )
+      - record: taskflow:slo:http_availability:ratio1h
+        expr: |
+          1 - (
+            sum(rate(taskflow_http_requests_total{status=~"5.."}[1h]))
+            /
+            clamp_min(sum(rate(taskflow_http_requests_total[1h])), 0.001)
+          )
+      - record: taskflow:slo:http_p99_latency_seconds:5m
+        expr: |
+          histogram_quantile(
+            0.99,
+            sum by (le) (rate(taskflow_http_request_duration_seconds_bucket[5m]))
+          )
+      - record: taskflow:slo:cloud_saga_provider_error_ratio5m
+        expr: |
+          sum(rate(taskflow_cloud_saga_step_operations_total{outcome="error"}[5m]))
+          /
+          clamp_min(sum(rate(taskflow_cloud_saga_step_operations_total[5m])), 0.001)
+
+  - name: taskflow-slo-alerts
+    rules:
+      - alert: TaskFlowHTTPAvailabilityBurnRateFast
+        expr: |
+          (1 - taskflow:slo:http_availability:ratio5m) > (14.4 * 0.001)
+          and
+          (1 - taskflow:slo:http_availability:ratio1h) > (14.4 * 0.001)
+        for: 5m
+        labels:
+          severity: critical
+          service: taskflow
+        annotations:
+          summary: TaskFlow is burning the 99.9% HTTP availability budget too quickly
+          runbook: docs/runbooks/CONTROL_PLANE_SLO.md#http-availability-burn
+
+      - alert: TaskFlowHTTPP99LatencyHigh
+        expr: taskflow:slo:http_p99_latency_seconds:5m > 1
+        for: 10m
+        labels:
+          severity: warning
+          service: taskflow
+        annotations:
+          summary: TaskFlow HTTP p99 latency is above one second
+          runbook: docs/runbooks/CONTROL_PLANE_SLO.md#latency
+
+      - alert: TaskFlowQueueStatsStale
+        expr: taskflow_queue_stats_fresh == 0
+        for: 2m
+        labels:
+          severity: critical
+          service: taskflow
+        annotations:
+          summary: Queue statistics are stale; autoscaling must not trust backlog as empty
+          runbook: docs/runbooks/CONTROL_PLANE_SLO.md#queue-observability
+
+      - alert: TaskFlowDLQCapacityExceeded
+        expr: taskflow_queue_dead_letter_over_limit > 0
+        for: 5m
+        labels:
+          severity: warning
+          service: taskflow
+        annotations:
+          summary: Durable DLQ remains above configured safe capacity
+          runbook: docs/runbooks/CONTROL_PLANE_SLO.md#dlq
+
+      - alert: TaskFlowGovernanceDebtFenced
+        expr: taskflow_control_plane_siem_governance_debt_fenced == 1
+        for: 1m
+        labels:
+          severity: critical
+          service: taskflow
+        annotations:
+          summary: Governance debt is actively fencing ordinary SIEM promotion
+          runbook: docs/runbooks/CONTROL_PLANE_SLO.md#governance-fence
+
+      - alert: TaskFlowGovernanceReplicaReceiptDebt
+        expr: taskflow_control_plane_siem_governance_replica_receipt_debt > 0
+        for: 5m
+        labels:
+          severity: warning
+          service: taskflow
+        annotations:
+          summary: Governance evidence has not reached replica receipt quorum
+          runbook: docs/runbooks/CONTROL_PLANE_SLO.md#governance-fence
+
+      - alert: TaskFlowCloudSagaBacklogStuck
+        expr: taskflow_cloud_saga_runnable_workflows > 0
+        for: 10m
+        labels:
+          severity: warning
+          service: taskflow
+        annotations:
+          summary: Cloud lifecycle Saga workflows remain runnable without converging
+          runbook: docs/runbooks/CONTROL_PLANE_SLO.md#cloud-saga
+
+      - alert: TaskFlowCloudSagaProviderErrors
+        expr: taskflow:slo:cloud_saga_provider_error_ratio5m > 0.05
+        for: 10m
+        labels:
+          severity: warning
+          service: taskflow
+        annotations:
+          summary: Cloud Saga Kubernetes provider-step error ratio is above 5 percent
+          runbook: docs/runbooks/CONTROL_PLANE_SLO.md#cloud-saga

@@ -1,0 +1,71 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: taskflow
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: taskflow
+  template:
+    metadata:
+      labels:
+        app: taskflow
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+        prometheus.io/path: "/metrics"
+    spec:
+      serviceAccountName: taskflow-cloud-control
+      terminationGracePeriodSeconds: 10
+      containers:
+        - name: taskflow
+          image: taskflow-go:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: taskflow-config
+            - secretRef:
+                name: taskflow-secret
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: http
+            initialDelaySeconds: 2
+            periodSeconds: 1
+          startupProbe:
+            httpGet:
+              path: /health/live
+              port: http
+            periodSeconds: 2
+            failureThreshold: 60
+          livenessProbe:
+            httpGet:
+              path: /health/live
+              port: http
+            periodSeconds: 5
+          volumeMounts:
+            - name: dlq-archive
+              mountPath: /var/lib/taskflow/dlq-archive
+            - name: dlq-archive-replica
+              mountPath: /var/lib/taskflow/dlq-archive-replica
+      volumes:
+        - name: dlq-archive
+          emptyDir: {}
+        - name: dlq-archive-replica
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: taskflow
+spec:
+  selector:
+    app: taskflow
+  ports:
+    - name: http
+      port: 80
+      targetPort: http

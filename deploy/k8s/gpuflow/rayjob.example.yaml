@@ -1,0 +1,53 @@
+apiVersion: ray.io/v1
+kind: RayJob
+metadata:
+  name: gpuflow-llm-train
+  labels:
+    gpuflow.yfj.dev/tenant: team-a
+    gpuflow.yfj.dev/slo-class: batch
+spec:
+  shutdownAfterJobFinishes: true
+  ttlSecondsAfterFinished: 300
+  entrypoint: python /workspace/train.py
+  rayClusterSpec:
+    rayVersion: "2.49.0"
+    headGroupSpec:
+      rayStartParams:
+        dashboard-host: "0.0.0.0"
+      template:
+        spec:
+          containers:
+            - name: ray-head
+              image: rayproject/ray:2.49.0-py312-gpu
+              resources:
+                requests:
+                  cpu: "2"
+                  memory: 4Gi
+                limits:
+                  cpu: "4"
+                  memory: 8Gi
+    workerGroupSpecs:
+      - groupName: gpu-workers
+        replicas: 2
+        minReplicas: 2
+        maxReplicas: 2
+        rayStartParams: {}
+        template:
+          metadata:
+            labels:
+              gpuflow.yfj.dev/gpu-class: a100
+          spec:
+            nodeSelector:
+              nvidia.com/gpu.product: NVIDIA-A100-SXM4-80GB
+            containers:
+              - name: ray-worker
+                image: rayproject/ray:2.49.0-py312-gpu
+                resources:
+                  requests:
+                    cpu: "4"
+                    memory: 16Gi
+                    nvidia.com/gpu: "1"
+                  limits:
+                    cpu: "8"
+                    memory: 32Gi
+                    nvidia.com/gpu: "1"

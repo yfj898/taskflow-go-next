@@ -1,0 +1,77 @@
+{
+  "realm": "taskflow-lab",
+  "displayName": "TaskFlow isolated OIDC integration lab",
+  "enabled": true,
+  "sslRequired": "none",
+  "registrationAllowed": false,
+  "accessTokenLifespan": 300,
+  "clients": [
+    {
+      "clientId": "taskflow-tenant-a",
+      "name": "TaskFlow team-a workload identity",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "clientAuthenticatorType": "client-secret",
+      "serviceAccountsEnabled": true,
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "fullScopeAllowed": false,
+      "protocolMappers": [
+        {"name": "taskflow-tenant", "protocol": "openid-connect", "protocolMapper": "oidc-hardcoded-claim-mapper", "config": {"claim.name": "tenant_id", "claim.value": "team-a", "jsonType.label": "String", "access.token.claim": "true", "id.token.claim": "false", "userinfo.token.claim": "false"}},
+        {"name": "taskflow-groups", "protocol": "openid-connect", "protocolMapper": "oidc-hardcoded-claim-mapper", "config": {"claim.name": "groups", "claim.value": "[\"operators\"]", "jsonType.label": "JSON", "access.token.claim": "true", "id.token.claim": "false", "userinfo.token.claim": "false"}},
+        {"name": "taskflow-audience", "protocol": "openid-connect", "protocolMapper": "oidc-audience-mapper", "config": {"included.custom.audience": "taskflow-control-plane", "access.token.claim": "true", "id.token.claim": "false"}}
+      ]
+    },
+    {
+      "clientId": "taskflow-tenant-b",
+      "name": "TaskFlow team-b workload identity",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "clientAuthenticatorType": "client-secret",
+      "serviceAccountsEnabled": true,
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "fullScopeAllowed": false,
+      "protocolMappers": [
+        {"name": "taskflow-tenant", "protocol": "openid-connect", "protocolMapper": "oidc-hardcoded-claim-mapper", "config": {"claim.name": "tenant_id", "claim.value": "team-b", "jsonType.label": "String", "access.token.claim": "true", "id.token.claim": "false", "userinfo.token.claim": "false"}},
+        {"name": "taskflow-groups", "protocol": "openid-connect", "protocolMapper": "oidc-hardcoded-claim-mapper", "config": {"claim.name": "groups", "claim.value": "[\"operators\"]", "jsonType.label": "JSON", "access.token.claim": "true", "id.token.claim": "false", "userinfo.token.claim": "false"}},
+        {"name": "taskflow-audience", "protocol": "openid-connect", "protocolMapper": "oidc-audience-mapper", "config": {"included.custom.audience": "taskflow-control-plane", "access.token.claim": "true", "id.token.claim": "false"}}
+      ]
+    },
+    {
+      "clientId": "taskflow-tenant-a-reader",
+      "name": "TaskFlow team-a read-only workload identity",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "clientAuthenticatorType": "client-secret",
+      "serviceAccountsEnabled": true,
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "fullScopeAllowed": false,
+      "protocolMappers": [
+        {"name": "taskflow-tenant", "protocol": "openid-connect", "protocolMapper": "oidc-hardcoded-claim-mapper", "config": {"claim.name": "tenant_id", "claim.value": "team-a", "jsonType.label": "String", "access.token.claim": "true", "id.token.claim": "false", "userinfo.token.claim": "false"}},
+        {"name": "taskflow-groups", "protocol": "openid-connect", "protocolMapper": "oidc-hardcoded-claim-mapper", "config": {"claim.name": "groups", "claim.value": "[\"readers\"]", "jsonType.label": "JSON", "access.token.claim": "true", "id.token.claim": "false", "userinfo.token.claim": "false"}},
+        {"name": "taskflow-audience", "protocol": "openid-connect", "protocolMapper": "oidc-audience-mapper", "config": {"included.custom.audience": "taskflow-control-plane", "access.token.claim": "true", "id.token.claim": "false"}}
+      ]
+    },
+    {
+      "clientId": "taskflow-tenant-a-no-grant",
+      "name": "Negative test: valid JWT but missing tenant authorization",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "clientAuthenticatorType": "client-secret",
+      "serviceAccountsEnabled": true,
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "fullScopeAllowed": false,
+      "protocolMappers": [
+        {"name": "taskflow-groups", "protocol": "openid-connect", "protocolMapper": "oidc-hardcoded-claim-mapper", "config": {"claim.name": "groups", "claim.value": "[\"operators\"]", "jsonType.label": "JSON", "access.token.claim": "true", "id.token.claim": "false", "userinfo.token.claim": "false"}},
+        {"name": "taskflow-audience", "protocol": "openid-connect", "protocolMapper": "oidc-audience-mapper", "config": {"included.custom.audience": "taskflow-control-plane", "access.token.claim": "true", "id.token.claim": "false"}}
+      ]
+    }
+  ]
+}

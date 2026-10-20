@@ -1,0 +1,11 @@
+{
+  "compute": {
+    "namespace": "team-a-workloads",
+    "image": "nginx:1.27-alpine",
+    "replicas": 1,
+    "cpu": "200m",
+    "memory": "256Mi"
+  },
+  "network": { "enabled": false },
+  "storage": { "enabled": false }
+}

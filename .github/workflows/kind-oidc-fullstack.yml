@@ -1,0 +1,41 @@
+name: kind-oidc-fullstack
+
+# Full Kubernetes + real Keycloak E2E is deliberately manual: it builds
+# multiple local images and starts a dedicated Kind cluster and IdP.
+on:
+  workflow_dispatch:
+
+jobs:
+  kind-keycloak:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      GOPROXY: https://proxy.golang.org,direct
+    steps:
+      - uses: actions/checkout@v4
+      - name: Generate disposable identity lab passwords
+        run: |
+          echo "KEYCLOAK_DB_PASSWORD=$(openssl rand -hex 24)" >> "$GITHUB_ENV"
+          echo "KEYCLOAK_ADMIN_PASSWORD=$(openssl rand -hex 24)" >> "$GITHUB_ENV"
+      - name: Start real Keycloak and PostgreSQL
+        run: docker compose -f deploy/keycloak/compose.yaml up -d
+      - name: Wait for OIDC discovery
+        run: |
+          for _ in $(seq 1 90); do
+            if curl -fsS --max-time 3 http://127.0.0.1:18090/realms/taskflow-lab/.well-known/openid-configuration >/dev/null 2>&1; then
+              exit 0
+            fi
+            sleep 2
+          done
+          docker logs --tail 80 taskflow-keycloak
+          exit 1
+      - name: Real Keycloak JWT to Kind multi-replica Saga full-stack test
+        run: sh scripts/cloud-control-kind-oidc-e2e.sh
+      - name: Cleanup isolated cluster and identity lab
+        if: always()
+        run: |
+          if [ -x /tmp/taskflow-release-k8s-tools/kind ]; then
+            /tmp/taskflow-release-k8s-tools/kind delete cluster --name taskflow-kind-keycloak-20261009 || true
+          fi
+          docker network disconnect kind taskflow-keycloak >/dev/null 2>&1 || true
+          docker compose -f deploy/keycloak/compose.yaml down --volumes --remove-orphans

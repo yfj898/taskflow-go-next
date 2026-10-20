@@ -1,0 +1,4 @@
+controller_replicas,workflows,wall_s,throughput_workflows_s,p50_completion_s,p95_completion_s,p99_completion_s,speedup_vs_1,scale_efficiency_vs_1
+1,90,19.8613,4.531425,18.5863,19.8253,19.8613,1.0,1.0
+2,90,17.6705,5.093234,16.3915,17.6155,17.6705,1.124,0.562
+4,90,16.6607,5.401934,14.7887,16.4657,16.6607,1.192,0.298

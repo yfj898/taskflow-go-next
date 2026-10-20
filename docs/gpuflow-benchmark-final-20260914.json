@@ -1,0 +1,50 @@
+{
+  "validated_at": "2026-09-14",
+  "workload": {
+    "jobs_per_run": 100000,
+    "gpu_nodes": 64,
+    "gpu_per_node": 8,
+    "tenants": 4,
+    "replicas_per_job": "1-4",
+    "note": "Synthetic scheduler/control-plane benchmark; not GPU model throughput."
+  },
+  "runs": [
+    {
+      "elapsed_ms": 17034.828,
+      "decisions_per_sec": 5870.3260419806165,
+      "scheduled": 45025,
+      "capacity_rejected": 54148,
+      "quota_rejected": 827,
+      "preemptions": 18068,
+      "peak_running": 301
+    },
+    {
+      "elapsed_ms": 17774.465,
+      "decisions_per_sec": 5626.048110540104,
+      "scheduled": 44972,
+      "capacity_rejected": 54266,
+      "quota_rejected": 762,
+      "preemptions": 17953,
+      "peak_running": 301
+    },
+    {
+      "elapsed_ms": 18273.971,
+      "decisions_per_sec": 5472.264286628551,
+      "scheduled": 44816,
+      "capacity_rejected": 54564,
+      "quota_rejected": 620,
+      "preemptions": 17810,
+      "peak_running": 301
+    }
+  ],
+  "summary": {
+    "median_elapsed_ms": 17774.465,
+    "median_decisions_per_sec": 5626.048110540104,
+    "throughput_cv_percent": 3.5489814615785535,
+    "median_scheduled": 44972,
+    "median_capacity_rejected": 54266,
+    "median_quota_rejected": 762,
+    "median_preemptions": 17953,
+    "peak_running": 301
+  }
+}

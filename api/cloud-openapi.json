@@ -1,0 +1,65 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "TaskFlow Cloud Resource Control API",
+    "version": "1.0.0",
+    "description": "Versioned API contract for the cloud resource, quota, order and Saga control plane. Tenant claims in the verified OIDC JWT, not request headers, define authorization scope when CLOUD_TENANT_AUTHZ_ENABLED=true."
+  },
+  "servers": [{"url": "/"}],
+  "security": [{"BearerJWT": []}],
+  "components": {
+    "securitySchemes": {"BearerJWT": {"type": "http", "scheme": "bearer", "bearerFormat": "JWT"}},
+    "parameters": {
+      "ResourceID": {"name": "id", "in": "path", "required": true, "schema": {"type": "integer", "minimum": 1}},
+      "TenantID": {"name": "tenant", "in": "path", "required": true, "schema": {"type": "string", "minLength": 1}},
+      "IdempotencyKey": {"name": "Idempotency-Key", "in": "header", "required": false, "description": "Client-generated request idempotency key scoped to the authenticated tenant. If omitted, the server assigns one.", "schema": {"type": "string", "maxLength": 128}},
+      "ListTenant": {"name": "tenant_id", "in": "query", "required": false, "description": "Mandatory when token grants multiple tenants. Single-tenant tokens default to their signed tenant.", "schema": {"type": "string"}},
+      "Limit": {"name": "limit", "in": "query", "required": false, "schema": {"type": "integer", "minimum": 1, "maximum": 100, "default": 20}},
+      "Offset": {"name": "offset", "in": "query", "required": false, "schema": {"type": "integer", "minimum": 0, "default": 0}}
+    },
+    "schemas": {
+      "Error": {"type": "object", "required": ["error"], "properties": {"error": {"type": "string"}}},
+      "Quota": {"type": "object", "properties": {"cpu_milli_limit": {"type": "integer"}, "memory_mib_limit": {"type": "integer"}, "replica_limit": {"type": "integer"}, "cpu_milli_used": {"type": "integer"}, "memory_mib_used": {"type": "integer"}, "replica_used": {"type": "integer"}, "tenant_id": {"type": "string"}}},
+      "QuotaInput": {"type": "object", "required": ["cpu_milli_limit", "memory_mib_limit", "replica_limit"], "properties": {"cpu_milli_limit": {"type": "integer", "minimum": 0}, "memory_mib_limit": {"type": "integer", "minimum": 0}, "replica_limit": {"type": "integer", "minimum": 0}}},
+      "Resource": {"type": "object", "required": ["id", "tenant_id", "name", "generation"], "properties": {"id": {"type": "integer"}, "tenant_id": {"type": "string"}, "name": {"type": "string"}, "kind": {"type": "string"}, "provider": {"type": "string"}, "orchestration_mode": {"type": "string"}, "generation": {"type": "integer"}, "actual_state": {"type": "string"}, "desired_state": {"type": "string"}}},
+      "Order": {"type": "object", "required": ["id", "tenant_id", "resource_id", "status"], "properties": {"id": {"type": "integer"}, "tenant_id": {"type": "string"}, "resource_id": {"type": "integer"}, "status": {"type": "string"}, "type": {"type": "string"}, "idempotency_key": {"type": "string"}}},
+      "Mutation": {"type": "object", "properties": {"resource": {"$ref": "#/components/schemas/Resource"}, "order": {"$ref": "#/components/schemas/Order"}}},
+      "ResourceCreate": {"type": "object", "required": ["tenant_id", "name", "spec"], "properties": {"tenant_id": {"type": "string"}, "name": {"type": "string", "minLength": 1, "maxLength": 63}, "kind": {"type": "string", "default": "deployment"}, "provider": {"type": "string", "default": "kubernetes"}, "spec": {"type": "object", "additionalProperties": true}}},
+      "BundleProvision": {"type": "object", "required": ["tenant_id", "name", "spec"], "properties": {"tenant_id": {"type": "string"}, "name": {"type": "string", "minLength": 1, "maxLength": 63}, "provider": {"type": "string", "default": "kubernetes"}, "spec": {"type": "object", "additionalProperties": true}}},
+      "Resize": {"type": "object", "required": ["spec"], "properties": {"spec": {"type": "object", "additionalProperties": true}}},
+      "WorkflowState": {"type": "object", "properties": {"workflow": {"type": "object", "additionalProperties": true}, "resource": {"$ref": "#/components/schemas/Resource"}, "order": {"$ref": "#/components/schemas/Order"}, "steps": {"type": "array", "items": {"type": "object", "additionalProperties": true}}}}
+    },
+    "responses": {
+      "Unauthorized": {"description": "Invalid, expired or missing bearer JWT", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Error"}}}},
+      "Forbidden": {"description": "Signed token lacks permission/tenant ownership", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Error"}}}},
+      "NotFound": {"description": "Resource does not exist or is outside authorized tenant scope", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Error"}}}},
+      "Conflict": {"description": "Idempotency mismatch, stale generation, active workflow or quota contention", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Error"}}}}
+    }
+  },
+  "paths": {
+    "/api/v1/cloud/tenants/{tenant}/quota": {
+      "parameters": [{"$ref": "#/components/parameters/TenantID"}],
+      "get": {"summary": "Read own tenant quota", "responses": {"200": {"description": "Tenant quota", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Quota"}}}}, "403": {"$ref": "#/components/responses/Forbidden"}}},
+      "put": {"summary": "Set own tenant quota", "requestBody": {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/QuotaInput"}}}}, "responses": {"200": {"description": "Updated quota", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Quota"}}}}, "403": {"$ref": "#/components/responses/Forbidden"}, "409": {"$ref": "#/components/responses/Conflict"}}}
+    },
+    "/api/v1/cloud/resources": {
+      "get": {"summary": "List resources within a granted tenant", "parameters": [{"$ref": "#/components/parameters/ListTenant"}, {"$ref": "#/components/parameters/Limit"}, {"$ref": "#/components/parameters/Offset"}], "responses": {"200": {"description": "Resource page"}, "403": {"$ref": "#/components/responses/Forbidden"}}},
+      "post": {"summary": "Request a Kubernetes deployment", "parameters": [{"$ref": "#/components/parameters/IdempotencyKey"}], "requestBody": {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ResourceCreate"}}}}, "responses": {"202": {"description": "Accepted resource order", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Mutation"}}}}, "403": {"$ref": "#/components/responses/Forbidden"}, "409": {"$ref": "#/components/responses/Conflict"}}}
+    },
+    "/api/v1/cloud/resources/{id}": {
+      "parameters": [{"$ref": "#/components/parameters/ResourceID"}],
+      "get": {"summary": "Read resource state", "responses": {"200": {"description": "Resource", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Resource"}}}}, "404": {"$ref": "#/components/responses/NotFound"}}},
+      "delete": {"summary": "Request resource deletion", "parameters": [{"$ref": "#/components/parameters/IdempotencyKey"}], "responses": {"202": {"description": "Accepted delete order", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Mutation"}}}}, "404": {"$ref": "#/components/responses/NotFound"}, "409": {"$ref": "#/components/responses/Conflict"}}}
+    },
+    "/api/v1/cloud/resources/{id}/resize": {"parameters": [{"$ref": "#/components/parameters/ResourceID"}], "post": {"summary": "Request direct resource resize", "parameters": [{"$ref": "#/components/parameters/IdempotencyKey"}], "requestBody": {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Resize"}}}}, "responses": {"202": {"description": "Accepted resize order"}, "404": {"$ref": "#/components/responses/NotFound"}, "409": {"$ref": "#/components/responses/Conflict"}}}},
+    "/api/v1/cloud/resources/{id}/orders": {"parameters": [{"$ref": "#/components/parameters/ResourceID"}], "get": {"summary": "List resource operation orders", "parameters": [{"$ref": "#/components/parameters/Limit"}, {"$ref": "#/components/parameters/Offset"}], "responses": {"200": {"description": "Order page"}, "404": {"$ref": "#/components/responses/NotFound"}}}},
+    "/api/v1/cloud/resources/{id}/reconcile": {"parameters": [{"$ref": "#/components/parameters/ResourceID"}], "post": {"summary": "Trigger an authorized direct resource reconcile", "responses": {"200": {"description": "Resource after reconcile"}, "404": {"$ref": "#/components/responses/NotFound"}, "409": {"$ref": "#/components/responses/Conflict"}}}},
+    "/api/v1/cloud/workflows/provision": {"post": {"summary": "Provision a multi-step Kubernetes resource Saga", "parameters": [{"$ref": "#/components/parameters/IdempotencyKey"}], "requestBody": {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/BundleProvision"}}}}, "responses": {"202": {"description": "Accepted durable workflow", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/WorkflowState"}}}}, "403": {"$ref": "#/components/responses/Forbidden"}, "409": {"$ref": "#/components/responses/Conflict"}}}},
+    "/api/v1/cloud/workflows/{id}": {"parameters": [{"$ref": "#/components/parameters/ResourceID"}], "get": {"summary": "Read authorized workflow and step progress", "responses": {"200": {"description": "Workflow state", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/WorkflowState"}}}}, "404": {"$ref": "#/components/responses/NotFound"}}}},
+    "/api/v1/cloud/workflows/{id}/reconcile": {"parameters": [{"$ref": "#/components/parameters/ResourceID"}], "post": {"summary": "Trigger authorized workflow reconcile", "responses": {"200": {"description": "Updated workflow state"}, "404": {"$ref": "#/components/responses/NotFound"}, "409": {"$ref": "#/components/responses/Conflict"}}}},
+    "/api/v1/cloud/resources/{id}/workflows/resize": {"parameters": [{"$ref": "#/components/parameters/ResourceID"}], "post": {"summary": "Start a durable resize Saga", "parameters": [{"$ref": "#/components/parameters/IdempotencyKey"}], "requestBody": {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Resize"}}}}, "responses": {"202": {"description": "Accepted resize workflow"}, "404": {"$ref": "#/components/responses/NotFound"}, "409": {"$ref": "#/components/responses/Conflict"}}}},
+    "/api/v1/cloud/resources/{id}/workflows/delete": {"parameters": [{"$ref": "#/components/parameters/ResourceID"}], "post": {"summary": "Start a durable delete Saga", "parameters": [{"$ref": "#/components/parameters/IdempotencyKey"}], "responses": {"202": {"description": "Accepted delete workflow"}, "404": {"$ref": "#/components/responses/NotFound"}, "409": {"$ref": "#/components/responses/Conflict"}}}},
+    "/api/v1/cloud/resources/{id}/workflows": {"parameters": [{"$ref": "#/components/parameters/ResourceID"}], "get": {"summary": "List workflows for an authorized resource", "parameters": [{"$ref": "#/components/parameters/Limit"}, {"$ref": "#/components/parameters/Offset"}], "responses": {"200": {"description": "Workflow page"}, "404": {"$ref": "#/components/responses/NotFound"}}}
+    }
+  }
+}

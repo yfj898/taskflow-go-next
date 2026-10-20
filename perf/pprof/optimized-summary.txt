@@ -1,0 +1,26 @@
+TaskFlow optimized pprof evidence — 2026-09-04
+
+The hottest task + outbox INSERTs use cached prepared database/sql statements
+inside the same explicit MySQL transaction. GORM remains for migrations and
+lower-frequency query/update paths.
+
+Second-profile evidence after the raw-SQL rewrite exposed repeated statement
+prepare/close overhead. Caching the two prepared INSERTs changed:
+
+  PrepareContext cumulative CPU                9.24% -> 0.59%
+  statement close cumulative CPU               7.77% -> 0.75%
+
+The GORM create processor disappeared from the top-20 CPU nodes after the hot
+path rewrite. Remaining dominant work was MySQL/socket syscall and runtime
+scheduling pressure.
+
+Primary controlled A/B result:
+  throughput                                   4,280.05 -> 5,643.98 RPS
+  P95                                          38.903 -> 27.881 ms
+  P99                                          57.523 -> 38.253 ms
+  HTTP errors                                  0 -> 0
+
+Interpretation:
+  Code-level reflection/allocation overhead was materially reduced; the next
+  bottleneck is increasingly database/network capacity, so further Go
+  micro-optimization is not the highest-value next step.

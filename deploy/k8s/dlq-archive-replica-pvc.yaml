@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: taskflow-dlq-archive-replica
+spec:
+  # Optional Phase 21 filesystem replica. Prefer a storage class/failure domain
+  # independent from the primary archive PVC when possible; an HTTP/object
+  # store replica can be used instead.
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi

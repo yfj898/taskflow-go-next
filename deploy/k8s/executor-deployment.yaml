@@ -1,0 +1,354 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: executor-worker
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app: executor-worker
+  template:
+    metadata:
+      labels:
+        app: executor-worker
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9093"
+        prometheus.io/path: "/metrics"
+    spec:
+      terminationGracePeriodSeconds: 45
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app: executor-worker
+                topologyKey: kubernetes.io/hostname
+            - weight: 80
+              podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app: executor-worker
+                topologyKey: topology.kubernetes.io/zone
+      containers:
+        - name: executor-worker
+          image: taskflow-go:latest
+          imagePullPolicy: IfNotPresent
+          command: ["/executor-worker"]
+          env:
+            - name: EXECUTOR_GRPC_LISTEN
+              value: ":9091"
+            - name: EXECUTOR_METRICS_ADDR
+              valueFrom:
+                configMapKeyRef:
+                  name: taskflow-config
+                  key: EXECUTOR_METRICS_ADDR
+            - name: REDIS_ADDR
+              valueFrom:
+                configMapKeyRef:
+                  name: taskflow-config
+                  key: REDIS_ADDR
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: taskflow-secret
+                  key: REDIS_PASSWORD
+            - name: OTEL_LOG_SPANS
+              value: "false"
+            - name: AI_PROVIDER
+              valueFrom:
+                configMapKeyRef:
+                  name: taskflow-config
+                  key: AI_PROVIDER
+            - name: AI_PROVIDER_KIND
+              valueFrom:
+                configMapKeyRef:
+                  name: taskflow-config
+                  key: AI_PROVIDER_KIND
+            - name: AI_ENDPOINT
+              valueFrom:
+                configMapKeyRef:
+                  name: taskflow-config
+                  key: AI_ENDPOINT
+            - name: AI_MODEL
+              valueFrom:
+                configMapKeyRef:
+                  name: taskflow-config
+                  key: AI_MODEL
+            - name: AI_CAPABILITIES
+              valueFrom:
+                configMapKeyRef:
+                  name: taskflow-config
+                  key: AI_CAPABILITIES
+            - name: AI_INPUT_COST_PER_1M
+              valueFrom:
+                configMapKeyRef:
+                  name: taskflow-config
+                  key: AI_INPUT_COST_PER_1M
+            - name: AI_OUTPUT_COST_PER_1M
+              valueFrom:
+                configMapKeyRef:
+                  name: taskflow-config
+                  key: AI_OUTPUT_COST_PER_1M
+            - name: AI_MAX_CONCURRENCY
+              valueFrom:
+                configMapKeyRef:
+                  name: taskflow-config
+                  key: AI_MAX_CONCURRENCY
+            - name: AI_GLOBAL_MAX_CONCURRENCY
+              valueFrom:
+                configMapKeyRef:
+                  name: taskflow-config
+                  key: AI_GLOBAL_MAX_CONCURRENCY
+            - name: AI_TIMEOUT_MS
+              valueFrom:
+                configMapKeyRef:
+                  name: taskflow-config
+                  key: AI_TIMEOUT_MS
+            - name: AI_BEARER_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: taskflow-secret
+                  key: AI_BEARER_TOKEN
+            - name: AI_FALLBACK_PROVIDER
+              valueFrom:
+                configMapKeyRef:
+                  name: taskflow-config
+                  key: AI_FALLBACK_PROVIDER
+            - name: AI_FALLBACK_KIND
+              valueFrom:
+                configMapKeyRef:
+                  name: taskflow-config
+                  key: AI_FALLBACK_KIND
+            - name: AI_FALLBACK_ENDPOINT
+              valueFrom:
+                configMapKeyRef:
+                  name: taskflow-config
+                  key: AI_FALLBACK_ENDPOINT
+            - name: AI_FALLBACK_MODEL
+              valueFrom:
+                configMapKeyRef:
+                  name: taskflow-config
+                  key: AI_FALLBACK_MODEL
+            - name: AI_FALLBACK_CAPABILITIES
+              valueFrom:
+                configMapKeyRef:
+                  name: taskflow-config
+                  key: AI_FALLBACK_CAPABILITIES
+            - name: AI_FALLBACK_INPUT_COST_PER_1M
+              valueFrom:
+                configMapKeyRef:
+                  name: taskflow-config
+                  key: AI_FALLBACK_INPUT_COST_PER_1M
+            - name: AI_FALLBACK_OUTPUT_COST_PER_1M
+              valueFrom:
+                configMapKeyRef:
+                  name: taskflow-config
+                  key: AI_FALLBACK_OUTPUT_COST_PER_1M
+            - name: AI_FALLBACK_MAX_CONCURRENCY
+              valueFrom:
+                configMapKeyRef:
+                  name: taskflow-config
+                  key: AI_FALLBACK_MAX_CONCURRENCY
+            - name: AI_FALLBACK_GLOBAL_MAX_CONCURRENCY
+              valueFrom:
+                configMapKeyRef:
+                  name: taskflow-config
+                  key: AI_FALLBACK_GLOBAL_MAX_CONCURRENCY
+            - name: AI_ROUTING_STRATEGY
+              valueFrom:
+                configMapKeyRef:
+                  name: taskflow-config
+                  key: AI_ROUTING_STRATEGY
+            - name: AI_PROVIDER_CIRCUIT_FAILURES
+              valueFrom:
+                configMapKeyRef:
+                  name: taskflow-config
+                  key: AI_PROVIDER_CIRCUIT_FAILURES
+            - name: AI_PROVIDER_CIRCUIT_OPEN_MS
+              valueFrom:
+                configMapKeyRef:
+                  name: taskflow-config
+                  key: AI_PROVIDER_CIRCUIT_OPEN_MS
+            - name: AI_DEFAULT_OUTPUT_TOKENS
+              valueFrom:
+                configMapKeyRef:
+                  name: taskflow-config
+                  key: AI_DEFAULT_OUTPUT_TOKENS
+            - name: AI_SLO_REALTIME_QUEUE_MS
+              valueFrom:
+                configMapKeyRef:
+                  name: taskflow-config
+                  key: AI_SLO_REALTIME_QUEUE_MS
+            - name: AI_SLO_REALTIME_TIMEOUT_MS
+              valueFrom:
+                configMapKeyRef:
+                  name: taskflow-config
+                  key: AI_SLO_REALTIME_TIMEOUT_MS
+            - name: AI_SLO_STANDARD_QUEUE_MS
+              valueFrom:
+                configMapKeyRef:
+                  name: taskflow-config
+                  key: AI_SLO_STANDARD_QUEUE_MS
+            - name: AI_SLO_STANDARD_TIMEOUT_MS
+              valueFrom:
+                configMapKeyRef:
+                  name: taskflow-config
+                  key: AI_SLO_STANDARD_TIMEOUT_MS
+            - name: AI_SLO_BATCH_QUEUE_MS
+              valueFrom:
+                configMapKeyRef:
+                  name: taskflow-config
+                  key: AI_SLO_BATCH_QUEUE_MS
+            - name: AI_SLO_BATCH_TIMEOUT_MS
+              valueFrom:
+                configMapKeyRef:
+                  name: taskflow-config
+                  key: AI_SLO_BATCH_TIMEOUT_MS
+            - name: AI_DISTRIBUTED_LEASE_MS
+              valueFrom:
+                configMapKeyRef:
+                  name: taskflow-config
+                  key: AI_DISTRIBUTED_LEASE_MS
+            - name: AI_CONCURRENCY_REDIS_PREFIX
+              valueFrom:
+                configMapKeyRef:
+                  name: taskflow-config
+                  key: AI_CONCURRENCY_REDIS_PREFIX
+            - name: AI_ADAPTIVE_LOAD_SHEDDING
+              valueFrom:
+                configMapKeyRef:
+                  name: taskflow-config
+                  key: AI_ADAPTIVE_LOAD_SHEDDING
+            - name: AI_PRESSURE_DEGRADED_QUEUE
+              valueFrom:
+                configMapKeyRef:
+                  name: taskflow-config
+                  key: AI_PRESSURE_DEGRADED_QUEUE
+            - name: AI_PRESSURE_OVERLOADED_QUEUE
+              valueFrom:
+                configMapKeyRef:
+                  name: taskflow-config
+                  key: AI_PRESSURE_OVERLOADED_QUEUE
+            - name: AI_PRESSURE_DEGRADED_FAILURE_RATE
+              valueFrom:
+                configMapKeyRef:
+                  name: taskflow-config
+                  key: AI_PRESSURE_DEGRADED_FAILURE_RATE
+            - name: AI_PRESSURE_OVERLOADED_FAILURE_RATE
+              valueFrom:
+                configMapKeyRef:
+                  name: taskflow-config
+                  key: AI_PRESSURE_OVERLOADED_FAILURE_RATE
+            - name: AI_PRESSURE_DEGRADED_LATENCY_MS
+              valueFrom:
+                configMapKeyRef:
+                  name: taskflow-config
+                  key: AI_PRESSURE_DEGRADED_LATENCY_MS
+            - name: AI_PRESSURE_OVERLOADED_LATENCY_MS
+              valueFrom:
+                configMapKeyRef:
+                  name: taskflow-config
+                  key: AI_PRESSURE_OVERLOADED_LATENCY_MS
+            - name: AI_HEDGE_ENABLED
+              valueFrom:
+                configMapKeyRef:
+                  name: taskflow-config
+                  key: AI_HEDGE_ENABLED
+            - name: AI_HEDGE_DELAY_MS
+              valueFrom:
+                configMapKeyRef:
+                  name: taskflow-config
+                  key: AI_HEDGE_DELAY_MS
+            - name: AI_HEDGE_CANCEL_WAIT_MS
+              valueFrom:
+                configMapKeyRef:
+                  name: taskflow-config
+                  key: AI_HEDGE_CANCEL_WAIT_MS
+            - name: AI_HEDGE_MAX_EXTRA_COST_USD
+              valueFrom:
+                configMapKeyRef:
+                  name: taskflow-config
+                  key: AI_HEDGE_MAX_EXTRA_COST_USD
+            - name: AI_TENANT_FAIR_SCHEDULING
+              valueFrom:
+                configMapKeyRef:
+                  name: taskflow-config
+                  key: AI_TENANT_FAIR_SCHEDULING
+            - name: AI_TENANT_MAX_CONSECUTIVE
+              valueFrom:
+                configMapKeyRef:
+                  name: taskflow-config
+                  key: AI_TENANT_MAX_CONSECUTIVE
+            - name: AI_TENANT_STARVATION_MS
+              valueFrom:
+                configMapKeyRef:
+                  name: taskflow-config
+                  key: AI_TENANT_STARVATION_MS
+            - name: AI_DISTRIBUTED_TENANT_QUOTA
+              valueFrom:
+                configMapKeyRef:
+                  name: taskflow-config
+                  key: AI_DISTRIBUTED_TENANT_QUOTA
+            - name: AI_TENANT_GLOBAL_MAX_CONCURRENCY
+              valueFrom:
+                configMapKeyRef:
+                  name: taskflow-config
+                  key: AI_TENANT_GLOBAL_MAX_CONCURRENCY
+            - name: AI_TENANT_CONCURRENCY_OVERRIDES
+              valueFrom:
+                configMapKeyRef:
+                  name: taskflow-config
+                  key: AI_TENANT_CONCURRENCY_OVERRIDES
+            - name: AI_FALLBACK_BEARER_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: taskflow-secret
+                  key: AI_FALLBACK_BEARER_TOKEN
+            - name: DRAIN_TIMEOUT_MS
+              valueFrom:
+                configMapKeyRef:
+                  name: taskflow-config
+                  key: DRAIN_TIMEOUT_MS
+          ports:
+            - name: grpc
+              containerPort: 9091
+            - name: metrics
+              containerPort: 9093
+          readinessProbe:
+            grpc:
+              port: 9091
+            initialDelaySeconds: 2
+            periodSeconds: 2
+            failureThreshold: 1
+          livenessProbe:
+            grpc:
+              port: 9091
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: 100m
+              memory: 64Mi
+            limits:
+              cpu: "1"
+              memory: 256Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 10001
+            runAsGroup: 10001
+            capabilities:
+              drop: ["ALL"]

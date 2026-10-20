@@ -1,0 +1,1561 @@
+{
+  "source_root": "/media/bili-guo/1235578e-e896-4ce5-9fdc-6318e4960f4c3/any/taskflow-go",
+  "source_branch": "main",
+  "source_commit": "ef1d68176f07dc9285d633f1f93549e6dbfb8b4a",
+  "source_status": "",
+  "files": [
+    {
+      "path": ".dockerignore",
+      "bytes": 293
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "bytes": 20706
+    },
+    {
+      "path": ".github/workflows/kind-oidc-fullstack.yml",
+      "bytes": 1660
+    },
+    {
+      "path": ".github/workflows/supply-chain.yml",
+      "bytes": 2571
+    },
+    {
+      "path": ".gitignore",
+      "bytes": 581
+    },
+    {
+      "path": "Dockerfile",
+      "bytes": 1670
+    },
+    {
+      "path": "Makefile",
+      "bytes": 7635
+    },
+    {
+      "path": "PERFORMANCE_REPORT.md",
+      "bytes": 7905
+    },
+    {
+      "path": "README.md",
+      "bytes": 145314
+    },
+    {
+      "path": "api/cloud-openapi.json",
+      "bytes": 11316
+    },
+    {
+      "path": "cmd/schema-migrate/main.go",
+      "bytes": 1853
+    },
+    {
+      "path": "cmd/taskflowctl/main.go",
+      "bytes": 10808
+    },
+    {
+      "path": "cmd/taskflowctl/main_test.go",
+      "bytes": 3333
+    },
+    {
+      "path": "deploy/k8s/cloud-control-rbac.yaml",
+      "bytes": 723
+    },
+    {
+      "path": "deploy/k8s/cloud-saga-e2e-app.yaml",
+      "bytes": 1734
+    },
+    {
+      "path": "deploy/k8s/configmap.yaml",
+      "bytes": 11471
+    },
+    {
+      "path": "deploy/k8s/deployment.yaml",
+      "bytes": 2924
+    },
+    {
+      "path": "deploy/k8s/dlq-archive-pvc.yaml",
+      "bytes": 327
+    },
+    {
+      "path": "deploy/k8s/dlq-archive-replica-pvc.yaml",
+      "bytes": 372
+    },
+    {
+      "path": "deploy/k8s/executor-deployment.yaml",
+      "bytes": 12455
+    },
+    {
+      "path": "deploy/k8s/executor-hpa.yaml",
+      "bytes": 428
+    },
+    {
+      "path": "deploy/k8s/executor-pdb.yaml",
+      "bytes": 162
+    },
+    {
+      "path": "deploy/k8s/executor-service.yaml",
+      "bytes": 235
+    },
+    {
+      "path": "deploy/k8s/gpuflow/rayjob.example.yaml",
+      "bytes": 1454
+    },
+    {
+      "path": "deploy/k8s/hpa.yaml",
+      "bytes": 414
+    },
+    {
+      "path": "deploy/k8s/keda-scaledobject.example.yaml",
+      "bytes": 2115
+    },
+    {
+      "path": "deploy/k8s/kustomization.release.example.yaml",
+      "bytes": 415
+    },
+    {
+      "path": "deploy/k8s/release-validation-infra.yaml",
+      "bytes": 3399
+    },
+    {
+      "path": "deploy/k8s/secret.example.yaml",
+      "bytes": 1757
+    },
+    {
+      "path": "deploy/k8s/service.yaml",
+      "bytes": 156
+    },
+    {
+      "path": "deploy/k8s/taskflow-pdb.yaml",
+      "bytes": 148
+    },
+    {
+      "path": "deploy/keycloak/compose.yaml",
+      "bytes": 1692
+    },
+    {
+      "path": "deploy/keycloak/production/README.md",
+      "bytes": 4010
+    },
+    {
+      "path": "deploy/keycloak/production/compose.yaml",
+      "bytes": 2520
+    },
+    {
+      "path": "deploy/keycloak/realm-taskflow-lab.json",
+      "bytes": 4996
+    },
+    {
+      "path": "deploy/multiregion/global-router.conf",
+      "bytes": 594
+    },
+    {
+      "path": "docker-compose.yml",
+      "bytes": 46503
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "bytes": 6210
+    },
+    {
+      "path": "docs/CLOUD_CONTROL.md",
+      "bytes": 11107
+    },
+    {
+      "path": "docs/CLOUD_GO_CLIENT.md",
+      "bytes": 2825
+    },
+    {
+      "path": "docs/CLOUD_ORDER_OPERATOR_WORKFLOW.md",
+      "bytes": 4502
+    },
+    {
+      "path": "docs/CLOUD_SAGA.md",
+      "bytes": 17326
+    },
+    {
+      "path": "docs/CLOUD_SAGA_AB_OPTIMIZATION_20260922.md",
+      "bytes": 7213
+    },
+    {
+      "path": "docs/CLOUD_SAGA_KIND_CHAOS_EVIDENCE.md",
+      "bytes": 5116
+    },
+    {
+      "path": "docs/CLOUD_SAGA_KIND_E2E_EVIDENCE.md",
+      "bytes": 6936
+    },
+    {
+      "path": "docs/CLOUD_SAGA_SCALE_BENCHMARK_20260922.md",
+      "bytes": 6475
+    },
+    {
+      "path": "docs/CLOUD_SAGA_STRUCTURAL_OPTIMIZATION_20260923.md",
+      "bytes": 8973
+    },
+    {
+      "path": "docs/CLOUD_TENANT_AUTHZ.md",
+      "bytes": 4447
+    },
+    {
+      "path": "docs/ENTERPRISE_ACCEPTANCE_20261009.md",
+      "bytes": 11742
+    },
+    {
+      "path": "docs/FULL_PROJECT_GUIDE_ZH.md",
+      "bytes": 48715
+    },
+    {
+      "path": "docs/GITHUB_CI_ONBOARDING.md",
+      "bytes": 2981
+    },
+    {
+      "path": "docs/GPUFLOW.md",
+      "bytes": 4700
+    },
+    {
+      "path": "docs/GPUFLOW_RESUME_EVIDENCE.md",
+      "bytes": 5433
+    },
+    {
+      "path": "docs/INTERVIEW_GUIDE.md",
+      "bytes": 6414
+    },
+    {
+      "path": "docs/INTERVIEW_GUIDE_ZH.md",
+      "bytes": 5998
+    },
+    {
+      "path": "docs/KEYCLOAK_REAL_IDP_INTEGRATION.md",
+      "bytes": 10415
+    },
+    {
+      "path": "docs/PERFORMANCE_RELEASE_2026-09-07.md",
+      "bytes": 4496
+    },
+    {
+      "path": "docs/PERFORMANCE_REPORT.md",
+      "bytes": 11601
+    },
+    {
+      "path": "docs/PERFORMANCE_STABILITY_2026-09-06.md",
+      "bytes": 5533
+    },
+    {
+      "path": "docs/PORTFOLIO.md",
+      "bytes": 5276
+    },
+    {
+      "path": "docs/PORTFOLIO_ZH.md",
+      "bytes": 28861
+    },
+    {
+      "path": "docs/RESUME_STAR_GO_BACKEND_INTERVIEW_20261009.md",
+      "bytes": 10147
+    },
+    {
+      "path": "docs/cloud-saga-ab-admission-20260922.csv",
+      "bytes": 988
+    },
+    {
+      "path": "docs/cloud-saga-ab-controller-20260922.csv",
+      "bytes": 1310
+    },
+    {
+      "path": "docs/cloud-saga-controller-scaling-20260922.csv",
+      "bytes": 316
+    },
+    {
+      "path": "docs/cloud-saga-scale-admission-20260922.csv",
+      "bytes": 483
+    },
+    {
+      "path": "docs/cloud-saga-structural-admission-20260923.csv",
+      "bytes": 1399
+    },
+    {
+      "path": "docs/cloud-saga-structural-controller-20260923.csv",
+      "bytes": 1232
+    },
+    {
+      "path": "docs/gpuflow-benchmark-final-20260914.json",
+      "bytes": 1295
+    },
+    {
+      "path": "docs/gpuflow-fairness-final-20260914.json",
+      "bytes": 1722
+    },
+    {
+      "path": "docs/runbooks/CLOUD_ORDER_SCHEMA_MIGRATION.md",
+      "bytes": 6080
+    },
+    {
+      "path": "docs/runbooks/CONTROL_PLANE_SLO.md",
+      "bytes": 5568
+    },
+    {
+      "path": "docs/runbooks/KEYCLOAK_72H_SOAK.md",
+      "bytes": 3299
+    },
+    {
+      "path": "docs/runbooks/MULTI_REGION_FAILOVER.md",
+      "bytes": 1710
+    },
+    {
+      "path": "examples/cloud-resource-order/bundle.json",
+      "bytes": 224
+    },
+    {
+      "path": "go.mod",
+      "bytes": 3273
+    },
+    {
+      "path": "go.sum",
+      "bytes": 17312
+    },
+    {
+      "path": "internal/archive/dead_letter.go",
+      "bytes": 9862
+    },
+    {
+      "path": "internal/archive/dead_letter_test.go",
+      "bytes": 3253
+    },
+    {
+      "path": "internal/archive/s3.go",
+      "bytes": 3777
+    },
+    {
+      "path": "internal/archive/s3_test.go",
+      "bytes": 1292
+    },
+    {
+      "path": "internal/cloudcontrol/kubernetes.go",
+      "bytes": 11282
+    },
+    {
+      "path": "internal/cloudcontrol/kubernetes_saga.go",
+      "bytes": 8641
+    },
+    {
+      "path": "internal/cloudcontrol/kubernetes_saga_test.go",
+      "bytes": 5731
+    },
+    {
+      "path": "internal/cloudcontrol/kubernetes_test.go",
+      "bytes": 4079
+    },
+    {
+      "path": "internal/cloudcontrol/provider.go",
+      "bytes": 490
+    },
+    {
+      "path": "internal/cloudcontrol/quota.go",
+      "bytes": 3236
+    },
+    {
+      "path": "internal/cloudcontrol/quota_test.go",
+      "bytes": 1275
+    },
+    {
+      "path": "internal/cloudcontrol/saga.go",
+      "bytes": 3885
+    },
+    {
+      "path": "internal/cloudcontrol/saga_fault_injection.go",
+      "bytes": 4761
+    },
+    {
+      "path": "internal/cloudcontrol/saga_fault_injection_test.go",
+      "bytes": 3326
+    },
+    {
+      "path": "internal/config/cloud_tenant_authz_test.go",
+      "bytes": 1459
+    },
+    {
+      "path": "internal/config/config.go",
+      "bytes": 61694
+    },
+    {
+      "path": "internal/config/config_phase32_test.go",
+      "bytes": 1381
+    },
+    {
+      "path": "internal/config/config_phase36_test.go",
+      "bytes": 697
+    },
+    {
+      "path": "internal/config/config_phase37_test.go",
+      "bytes": 672
+    },
+    {
+      "path": "internal/config/config_phase41_test.go",
+      "bytes": 768
+    },
+    {
+      "path": "internal/config/config_test.go",
+      "bytes": 33454
+    },
+    {
+      "path": "internal/domain/ai_budget.go",
+      "bytes": 2456
+    },
+    {
+      "path": "internal/domain/ai_governance.go",
+      "bytes": 1349
+    },
+    {
+      "path": "internal/domain/cloud_resource.go",
+      "bytes": 12569
+    },
+    {
+      "path": "internal/domain/control_plane_audit.go",
+      "bytes": 4180
+    },
+    {
+      "path": "internal/domain/control_plane_audit_test.go",
+      "bytes": 2014
+    },
+    {
+      "path": "internal/domain/control_plane_delivery.go",
+      "bytes": 22063
+    },
+    {
+      "path": "internal/domain/control_plane_siem_term_history.go",
+      "bytes": 2742
+    },
+    {
+      "path": "internal/domain/dead_letter.go",
+      "bytes": 7525
+    },
+    {
+      "path": "internal/domain/outbox.go",
+      "bytes": 917
+    },
+    {
+      "path": "internal/domain/task.go",
+      "bytes": 2018
+    },
+    {
+      "path": "internal/executor/ai_backpressure.go",
+      "bytes": 7866
+    },
+    {
+      "path": "internal/executor/ai_distributed_concurrency.go",
+      "bytes": 8084
+    },
+    {
+      "path": "internal/executor/ai_hedge.go",
+      "bytes": 14113
+    },
+    {
+      "path": "internal/executor/ai_http.go",
+      "bytes": 7646
+    },
+    {
+      "path": "internal/executor/ai_http_test.go",
+      "bytes": 6762
+    },
+    {
+      "path": "internal/executor/ai_load_shedding.go",
+      "bytes": 3690
+    },
+    {
+      "path": "internal/executor/ai_openai.go",
+      "bytes": 4771
+    },
+    {
+      "path": "internal/executor/ai_phase10_test.go",
+      "bytes": 5917
+    },
+    {
+      "path": "internal/executor/ai_phase11_test.go",
+      "bytes": 3652
+    },
+    {
+      "path": "internal/executor/ai_phase3_test.go",
+      "bytes": 5605
+    },
+    {
+      "path": "internal/executor/ai_phase4_test.go",
+      "bytes": 4290
+    },
+    {
+      "path": "internal/executor/ai_phase6_test.go",
+      "bytes": 7180
+    },
+    {
+      "path": "internal/executor/ai_phase7_test.go",
+      "bytes": 4874
+    },
+    {
+      "path": "internal/executor/ai_phase8_test.go",
+      "bytes": 5495
+    },
+    {
+      "path": "internal/executor/ai_phase9_test.go",
+      "bytes": 4798
+    },
+    {
+      "path": "internal/executor/ai_routing.go",
+      "bytes": 33214
+    },
+    {
+      "path": "internal/executor/ai_tenant_quota.go",
+      "bytes": 4875
+    },
+    {
+      "path": "internal/executor/breaker.go",
+      "bytes": 1835
+    },
+    {
+      "path": "internal/executor/breaker_test.go",
+      "bytes": 1162
+    },
+    {
+      "path": "internal/executor/executor.go",
+      "bytes": 2860
+    },
+    {
+      "path": "internal/executor/grpc.go",
+      "bytes": 10137
+    },
+    {
+      "path": "internal/executor/grpc_test.go",
+      "bytes": 4981
+    },
+    {
+      "path": "internal/executor/router.go",
+      "bytes": 3203
+    },
+    {
+      "path": "internal/gpuflow/queue.go",
+      "bytes": 7401
+    },
+    {
+      "path": "internal/gpuflow/queue_test.go",
+      "bytes": 4257
+    },
+    {
+      "path": "internal/gpuflow/rayjob.go",
+      "bytes": 4451
+    },
+    {
+      "path": "internal/gpuflow/rayjob_test.go",
+      "bytes": 1155
+    },
+    {
+      "path": "internal/gpuflow/scheduler.go",
+      "bytes": 9824
+    },
+    {
+      "path": "internal/gpuflow/scheduler_test.go",
+      "bytes": 3682
+    },
+    {
+      "path": "internal/handler/cloud_keycloak_integration_test.go",
+      "bytes": 10619
+    },
+    {
+      "path": "internal/handler/cloud_openapi_contract_test.go",
+      "bytes": 2371
+    },
+    {
+      "path": "internal/handler/cloud_resource.go",
+      "bytes": 7161
+    },
+    {
+      "path": "internal/handler/cloud_tenant_authz.go",
+      "bytes": 3718
+    },
+    {
+      "path": "internal/handler/cloud_tenant_authz_test.go",
+      "bytes": 4604
+    },
+    {
+      "path": "internal/handler/cloud_tenant_mysql_integration_test.go",
+      "bytes": 10012
+    },
+    {
+      "path": "internal/handler/cloud_workflow.go",
+      "bytes": 5559
+    },
+    {
+      "path": "internal/handler/control_plane_audit.go",
+      "bytes": 2787
+    },
+    {
+      "path": "internal/handler/control_plane_audit_test.go",
+      "bytes": 5595
+    },
+    {
+      "path": "internal/handler/control_plane_auth.go",
+      "bytes": 5268
+    },
+    {
+      "path": "internal/handler/control_plane_auth_test.go",
+      "bytes": 4621
+    },
+    {
+      "path": "internal/handler/control_plane_oidc.go",
+      "bytes": 9925
+    },
+    {
+      "path": "internal/handler/control_plane_oidc_test.go",
+      "bytes": 4059
+    },
+    {
+      "path": "internal/handler/middleware.go",
+      "bytes": 2488
+    },
+    {
+      "path": "internal/handler/router.go",
+      "bytes": 36925
+    },
+    {
+      "path": "internal/metrics/db.go",
+      "bytes": 1707
+    },
+    {
+      "path": "internal/metrics/metrics.go",
+      "bytes": 30681
+    },
+    {
+      "path": "internal/monitor/control_plane_audit.go",
+      "bytes": 2308
+    },
+    {
+      "path": "internal/monitor/control_plane_siem.go",
+      "bytes": 2176
+    },
+    {
+      "path": "internal/monitor/dead_letter_archive_object.go",
+      "bytes": 2440
+    },
+    {
+      "path": "internal/monitor/dead_letter_lifecycle.go",
+      "bytes": 4535
+    },
+    {
+      "path": "internal/monitor/queue.go",
+      "bytes": 1391
+    },
+    {
+      "path": "internal/monitor/queue_compaction.go",
+      "bytes": 1245
+    },
+    {
+      "path": "internal/monitor/queue_test.go",
+      "bytes": 4689
+    },
+    {
+      "path": "internal/outbox/dispatcher.go",
+      "bytes": 5521
+    },
+    {
+      "path": "internal/queue/compaction.go",
+      "bytes": 5824
+    },
+    {
+      "path": "internal/queue/compaction_test.go",
+      "bytes": 420
+    },
+    {
+      "path": "internal/queue/kafka.go",
+      "bytes": 3910
+    },
+    {
+      "path": "internal/queue/redis.go",
+      "bytes": 203
+    },
+    {
+      "path": "internal/queue/task_queue.go",
+      "bytes": 6310
+    },
+    {
+      "path": "internal/queue/task_queue_test.go",
+      "bytes": 3265
+    },
+    {
+      "path": "internal/reconciler/coordination.go",
+      "bytes": 3088
+    },
+    {
+      "path": "internal/reconciler/reconciler.go",
+      "bytes": 4292
+    },
+    {
+      "path": "internal/reconciler/reconciler_test.go",
+      "bytes": 6677
+    },
+    {
+      "path": "internal/repository/ai_budget.go",
+      "bytes": 10292
+    },
+    {
+      "path": "internal/repository/ai_governance.go",
+      "bytes": 5839
+    },
+    {
+      "path": "internal/repository/cloud_managed_workflow_schema_integration_test.go",
+      "bytes": 2359
+    },
+    {
+      "path": "internal/repository/cloud_quota_integration_test.go",
+      "bytes": 15550
+    },
+    {
+      "path": "internal/repository/cloud_resource_repository.go",
+      "bytes": 37906
+    },
+    {
+      "path": "internal/repository/cloud_tenant_scope.go",
+      "bytes": 1784
+    },
+    {
+      "path": "internal/repository/cloud_tenant_scope_integration_test.go",
+      "bytes": 5930
+    },
+    {
+      "path": "internal/repository/cloud_workflow_mutation_repository.go",
+      "bytes": 17288
+    },
+    {
+      "path": "internal/repository/cloud_workflow_repository.go",
+      "bytes": 25194
+    },
+    {
+      "path": "internal/repository/control_plane_audit.go",
+      "bytes": 12038
+    },
+    {
+      "path": "internal/repository/control_plane_delivery.go",
+      "bytes": 23975
+    },
+    {
+      "path": "internal/repository/control_plane_siem_governance.go",
+      "bytes": 43883
+    },
+    {
+      "path": "internal/repository/control_plane_siem_promotion.go",
+      "bytes": 15551
+    },
+    {
+      "path": "internal/repository/dead_letter.go",
+      "bytes": 4926
+    },
+    {
+      "path": "internal/repository/dead_letter_archive.go",
+      "bytes": 11080
+    },
+    {
+      "path": "internal/repository/dead_letter_archive_object.go",
+      "bytes": 5524
+    },
+    {
+      "path": "internal/repository/dead_letter_lifecycle.go",
+      "bytes": 8469
+    },
+    {
+      "path": "internal/repository/enqueue_fencing.go",
+      "bytes": 4762
+    },
+    {
+      "path": "internal/repository/mysql.go",
+      "bytes": 2491
+    },
+    {
+      "path": "internal/repository/task_repository.go",
+      "bytes": 17025
+    },
+    {
+      "path": "internal/rpc/executor_service.go",
+      "bytes": 1982
+    },
+    {
+      "path": "internal/schemamigrate/cloud_orders.go",
+      "bytes": 6327
+    },
+    {
+      "path": "internal/schemamigrate/cloud_orders_integration_test.go",
+      "bytes": 3824
+    },
+    {
+      "path": "internal/service/ai_budget.go",
+      "bytes": 4596
+    },
+    {
+      "path": "internal/service/ai_governance.go",
+      "bytes": 8351
+    },
+    {
+      "path": "internal/service/cloud_resource.go",
+      "bytes": 15390
+    },
+    {
+      "path": "internal/service/cloud_workflow.go",
+      "bytes": 31087
+    },
+    {
+      "path": "internal/service/cloud_workflow_integration_test.go",
+      "bytes": 34631
+    },
+    {
+      "path": "internal/service/control_plane_audit.go",
+      "bytes": 3995
+    },
+    {
+      "path": "internal/service/dead_letter.go",
+      "bytes": 21256
+    },
+    {
+      "path": "internal/service/task_service.go",
+      "bytes": 1634
+    },
+    {
+      "path": "internal/siem/aws_credentials.go",
+      "bytes": 10538
+    },
+    {
+      "path": "internal/siem/aws_credentials_test.go",
+      "bytes": 3525
+    },
+    {
+      "path": "internal/siem/aws_kms_signer.go",
+      "bytes": 6802
+    },
+    {
+      "path": "internal/siem/aws_kms_signer_test.go",
+      "bytes": 1955
+    },
+    {
+      "path": "internal/siem/checkpoint_reconcile.go",
+      "bytes": 8569
+    },
+    {
+      "path": "internal/siem/checkpoint_reconcile_test.go",
+      "bytes": 3778
+    },
+    {
+      "path": "internal/siem/coordination.go",
+      "bytes": 4358
+    },
+    {
+      "path": "internal/siem/delivery.go",
+      "bytes": 34611
+    },
+    {
+      "path": "internal/siem/delivery_test.go",
+      "bytes": 6898
+    },
+    {
+      "path": "internal/siem/evidence_replica.go",
+      "bytes": 7708
+    },
+    {
+      "path": "internal/siem/evidence_replica_test.go",
+      "bytes": 3673
+    },
+    {
+      "path": "internal/siem/governance.go",
+      "bytes": 29757
+    },
+    {
+      "path": "internal/siem/governance_phase38_test.go",
+      "bytes": 6071
+    },
+    {
+      "path": "internal/siem/governance_phase39_test.go",
+      "bytes": 3076
+    },
+    {
+      "path": "internal/siem/governance_phase40_test.go",
+      "bytes": 2947
+    },
+    {
+      "path": "internal/siem/governance_reconcile.go",
+      "bytes": 24962
+    },
+    {
+      "path": "internal/siem/governance_test.go",
+      "bytes": 2939
+    },
+    {
+      "path": "internal/siem/promotion_workflow.go",
+      "bytes": 27092
+    },
+    {
+      "path": "internal/siem/receiver_checkpoint.go",
+      "bytes": 4549
+    },
+    {
+      "path": "internal/siem/receiver_cluster.go",
+      "bytes": 6456
+    },
+    {
+      "path": "internal/siem/receiver_control.go",
+      "bytes": 17631
+    },
+    {
+      "path": "internal/siem/remote_signer.go",
+      "bytes": 3627
+    },
+    {
+      "path": "internal/siem/remote_signer_test.go",
+      "bytes": 2280
+    },
+    {
+      "path": "internal/siem/signer.go",
+      "bytes": 2935
+    },
+    {
+      "path": "internal/siem/signer_test.go",
+      "bytes": 2459
+    },
+    {
+      "path": "internal/siem/vault_transit_signer.go",
+      "bytes": 4544
+    },
+    {
+      "path": "internal/siem/vault_transit_signer_test.go",
+      "bytes": 1673
+    },
+    {
+      "path": "internal/telemetry/grpc.go",
+      "bytes": 988
+    },
+    {
+      "path": "internal/telemetry/telemetry.go",
+      "bytes": 1748
+    },
+    {
+      "path": "internal/testsupport/mysql.go",
+      "bytes": 769
+    },
+    {
+      "path": "internal/testsupport/mysql_test.go",
+      "bytes": 799
+    },
+    {
+      "path": "internal/worker/pool.go",
+      "bytes": 11419
+    },
+    {
+      "path": "internal/worker/pool_test.go",
+      "bytes": 1906
+    },
+    {
+      "path": "loadtest/perf.js",
+      "bytes": 805
+    },
+    {
+      "path": "loadtest/tasks.js",
+      "bytes": 721
+    },
+    {
+      "path": "monitoring/alertmanager.yml",
+      "bytes": 464
+    },
+    {
+      "path": "monitoring/alerts.yml",
+      "bytes": 4143
+    },
+    {
+      "path": "monitoring/grafana/provisioning/dashboards/taskflow.yml",
+      "bytes": 193
+    },
+    {
+      "path": "monitoring/grafana/provisioning/datasources/prometheus.yml",
+      "bytes": 160
+    },
+    {
+      "path": "monitoring/grafana/taskflow-overview.json",
+      "bytes": 2626
+    },
+    {
+      "path": "perf/PERFORMANCE_REPORT.md",
+      "bytes": 5187
+    },
+    {
+      "path": "perf/phase11-fixed-hardware-20260906/environment.txt",
+      "bytes": 4855
+    },
+    {
+      "path": "perf/phase11-fixed-hardware-20260906/summary.json",
+      "bytes": 4300
+    },
+    {
+      "path": "perf/phase11-fixed-hardware-20260906/summary.md",
+      "bytes": 1450
+    },
+    {
+      "path": "perf/post-phase21-fixed-hardware-20260907/environment.txt",
+      "bytes": 4855
+    },
+    {
+      "path": "perf/post-phase21-fixed-hardware-20260907/summary.json",
+      "bytes": 4293
+    },
+    {
+      "path": "perf/post-phase21-fixed-hardware-20260907/summary.md",
+      "bytes": 1455
+    },
+    {
+      "path": "perf/pprof/README.md",
+      "bytes": 466
+    },
+    {
+      "path": "perf/pprof/baseline-summary.txt",
+      "bytes": 1116
+    },
+    {
+      "path": "perf/pprof/optimized-summary.txt",
+      "bytes": 1197
+    },
+    {
+      "path": "pkg/cloudclient/client.go",
+      "bytes": 7590
+    },
+    {
+      "path": "pkg/cloudclient/client_test.go",
+      "bytes": 4946
+    },
+    {
+      "path": "pkg/cloudclient/operations.go",
+      "bytes": 4993
+    },
+    {
+      "path": "pkg/cloudclient/operations_test.go",
+      "bytes": 5253
+    },
+    {
+      "path": "prometheus.yml",
+      "bytes": 353
+    },
+    {
+      "path": "proto/executor.proto",
+      "bytes": 431
+    },
+    {
+      "path": "scripts/ai-gateway-mock.py",
+      "bytes": 3388
+    },
+    {
+      "path": "scripts/ai-phase10-smoke.sh",
+      "bytes": 3382
+    },
+    {
+      "path": "scripts/ai-phase11-smoke.sh",
+      "bytes": 6094
+    },
+    {
+      "path": "scripts/ai-phase2-smoke.sh",
+      "bytes": 1546
+    },
+    {
+      "path": "scripts/ai-phase3-smoke.sh",
+      "bytes": 4715
+    },
+    {
+      "path": "scripts/ai-phase4-smoke.sh",
+      "bytes": 5635
+    },
+    {
+      "path": "scripts/ai-phase5-smoke.sh",
+      "bytes": 6740
+    },
+    {
+      "path": "scripts/ai-phase6-smoke.sh",
+      "bytes": 4613
+    },
+    {
+      "path": "scripts/ai-phase7-client.go",
+      "bytes": 4764
+    },
+    {
+      "path": "scripts/ai-phase7-smoke.sh",
+      "bytes": 5279
+    },
+    {
+      "path": "scripts/ai-phase8-smoke.sh",
+      "bytes": 4235
+    },
+    {
+      "path": "scripts/ai-phase9-smoke.sh",
+      "bytes": 5602
+    },
+    {
+      "path": "scripts/ai-smoke.sh",
+      "bytes": 924
+    },
+    {
+      "path": "scripts/aws-credentials-mock.py",
+      "bytes": 6022
+    },
+    {
+      "path": "scripts/aws-kms-mock.py",
+      "bytes": 5430
+    },
+    {
+      "path": "scripts/cloud-control-kind-chaos.sh",
+      "bytes": 14042
+    },
+    {
+      "path": "scripts/cloud-control-kind-e2e.sh",
+      "bytes": 19802
+    },
+    {
+      "path": "scripts/cloud-control-kind-oidc-e2e.sh",
+      "bytes": 8984
+    },
+    {
+      "path": "scripts/cloud-control-quota-smoke.sh",
+      "bytes": 1215
+    },
+    {
+      "path": "scripts/cloud-control-saga-smoke.sh",
+      "bytes": 1231
+    },
+    {
+      "path": "scripts/cloud-control-scale-ab.sh",
+      "bytes": 1704
+    },
+    {
+      "path": "scripts/cloud-control-scale-benchmark.sh",
+      "bytes": 16081
+    },
+    {
+      "path": "scripts/cloud-mixed-version-rollout-smoke.sh",
+      "bytes": 7705
+    },
+    {
+      "path": "scripts/cloud-saga-order-load.py",
+      "bytes": 8105
+    },
+    {
+      "path": "scripts/cloud-saga-scale-ab-report.py",
+      "bytes": 6558
+    },
+    {
+      "path": "scripts/cloud-saga-scale-report.py",
+      "bytes": 8777
+    },
+    {
+      "path": "scripts/gate.sh",
+      "bytes": 7263
+    },
+    {
+      "path": "scripts/github-private-bootstrap.sh",
+      "bytes": 1824
+    },
+    {
+      "path": "scripts/grpc-smoke.sh",
+      "bytes": 1562
+    },
+    {
+      "path": "scripts/keycloak-72h-soak.py",
+      "bytes": 7920
+    },
+    {
+      "path": "scripts/keycloak-idp-outage-smoke.sh",
+      "bytes": 3715
+    },
+    {
+      "path": "scripts/keycloak-live-smoke.sh",
+      "bytes": 3585
+    },
+    {
+      "path": "scripts/keycloak-production-mode-smoke.sh",
+      "bytes": 5188
+    },
+    {
+      "path": "scripts/keycloak-rotation-smoke.sh",
+      "bytes": 4267
+    },
+    {
+      "path": "scripts/keycloak-slo-load.py",
+      "bytes": 7990
+    },
+    {
+      "path": "scripts/keycloak-slo-run.sh",
+      "bytes": 1768
+    },
+    {
+      "path": "scripts/keycloak-stage-up.sh",
+      "bytes": 4090
+    },
+    {
+      "path": "scripts/keycloak-verify.sh",
+      "bytes": 4593
+    },
+    {
+      "path": "scripts/kms-signer-mock.py",
+      "bytes": 3522
+    },
+    {
+      "path": "scripts/outbox-recovery.sh",
+      "bytes": 2241
+    },
+    {
+      "path": "scripts/perf-ab.sh",
+      "bytes": 1319
+    },
+    {
+      "path": "scripts/perf-benchmark.sh",
+      "bytes": 3759
+    },
+    {
+      "path": "scripts/perf-load.py",
+      "bytes": 3005
+    },
+    {
+      "path": "scripts/perf-multi.sh",
+      "bytes": 2184
+    },
+    {
+      "path": "scripts/perf_benchmark_test.py",
+      "bytes": 1123
+    },
+    {
+      "path": "scripts/perf_multi.py",
+      "bytes": 7986
+    },
+    {
+      "path": "scripts/perf_multi_test.py",
+      "bytes": 2029
+    },
+    {
+      "path": "scripts/phase12-autoscaling-smoke.sh",
+      "bytes": 2389
+    },
+    {
+      "path": "scripts/phase12-keda-check.py",
+      "bytes": 1156
+    },
+    {
+      "path": "scripts/phase13-drain-smoke.sh",
+      "bytes": 7393
+    },
+    {
+      "path": "scripts/phase13-k8s-check.py",
+      "bytes": 2628
+    },
+    {
+      "path": "scripts/phase14-availability-smoke.sh",
+      "bytes": 474
+    },
+    {
+      "path": "scripts/phase14-k8s-check.py",
+      "bytes": 2879
+    },
+    {
+      "path": "scripts/phase15-coordination-check.py",
+      "bytes": 2396
+    },
+    {
+      "path": "scripts/phase15-reconciler-smoke.sh",
+      "bytes": 6666
+    },
+    {
+      "path": "scripts/phase16-enqueue-fencing-smoke.sh",
+      "bytes": 9690
+    },
+    {
+      "path": "scripts/phase16-fencing-check.py",
+      "bytes": 1939
+    },
+    {
+      "path": "scripts/phase17-compaction-check.py",
+      "bytes": 1740
+    },
+    {
+      "path": "scripts/phase17-compaction-smoke.sh",
+      "bytes": 7333
+    },
+    {
+      "path": "scripts/phase18-dlq-check.py",
+      "bytes": 2498
+    },
+    {
+      "path": "scripts/phase18-dlq-smoke.sh",
+      "bytes": 10530
+    },
+    {
+      "path": "scripts/phase19-dlq-lifecycle-check.py",
+      "bytes": 3071
+    },
+    {
+      "path": "scripts/phase19-dlq-lifecycle-smoke.sh",
+      "bytes": 10076
+    },
+    {
+      "path": "scripts/phase20-dlq-archive-check.py",
+      "bytes": 3674
+    },
+    {
+      "path": "scripts/phase20-dlq-archive-smoke.sh",
+      "bytes": 10182
+    },
+    {
+      "path": "scripts/phase21-dlq-archive-object-check.py",
+      "bytes": 3558
+    },
+    {
+      "path": "scripts/phase21-dlq-archive-object-smoke.sh",
+      "bytes": 9423
+    },
+    {
+      "path": "scripts/phase22-control-plane-auth-check.py",
+      "bytes": 1884
+    },
+    {
+      "path": "scripts/phase22-control-plane-auth-smoke.sh",
+      "bytes": 3642
+    },
+    {
+      "path": "scripts/phase23-control-plane-audit-check.py",
+      "bytes": 1874
+    },
+    {
+      "path": "scripts/phase23-control-plane-audit-smoke.sh",
+      "bytes": 4952
+    },
+    {
+      "path": "scripts/phase24-control-plane-integrity-check.py",
+      "bytes": 2415
+    },
+    {
+      "path": "scripts/phase24-control-plane-integrity-smoke.sh",
+      "bytes": 7817
+    },
+    {
+      "path": "scripts/phase25-siem-delivery-check.py",
+      "bytes": 2548
+    },
+    {
+      "path": "scripts/phase25-siem-delivery-smoke.sh",
+      "bytes": 9565
+    },
+    {
+      "path": "scripts/phase26-siem-ha-kms-check.py",
+      "bytes": 3478
+    },
+    {
+      "path": "scripts/phase26-siem-ha-kms-smoke.sh",
+      "bytes": 20670
+    },
+    {
+      "path": "scripts/phase27-siem-exactly-once-dr-check.py",
+      "bytes": 2995
+    },
+    {
+      "path": "scripts/phase27-siem-exactly-once-dr-smoke.sh",
+      "bytes": 15427
+    },
+    {
+      "path": "scripts/phase28-vault-credentials-reconcile-check.py",
+      "bytes": 2925
+    },
+    {
+      "path": "scripts/phase28-vault-credentials-reconcile-smoke.sh",
+      "bytes": 19290
+    },
+    {
+      "path": "scripts/phase28-web-identity-token.txt",
+      "bytes": 27
+    },
+    {
+      "path": "scripts/phase29-receiver-failover-dr-check.py",
+      "bytes": 2834
+    },
+    {
+      "path": "scripts/phase29-receiver-failover-dr-smoke.sh",
+      "bytes": 17819
+    },
+    {
+      "path": "scripts/phase30-receiver-term-failback-dr-check.py",
+      "bytes": 3281
+    },
+    {
+      "path": "scripts/phase30-receiver-term-failback-dr-smoke.sh",
+      "bytes": 20245
+    },
+    {
+      "path": "scripts/phase31-promotion-workflow-rpo-check.py",
+      "bytes": 3534
+    },
+    {
+      "path": "scripts/phase31-promotion-workflow-rpo-smoke.sh",
+      "bytes": 24027
+    },
+    {
+      "path": "scripts/phase32-governance-check.py",
+      "bytes": 3211
+    },
+    {
+      "path": "scripts/phase32-governance-mock.py",
+      "bytes": 7605
+    },
+    {
+      "path": "scripts/phase32-governance-smoke.sh",
+      "bytes": 27458
+    },
+    {
+      "path": "scripts/phase33-governance-retry-check.py",
+      "bytes": 2003
+    },
+    {
+      "path": "scripts/phase33-governance-retry-smoke.sh",
+      "bytes": 11648
+    },
+    {
+      "path": "scripts/phase34-governance-debt-check.py",
+      "bytes": 2244
+    },
+    {
+      "path": "scripts/phase34-governance-debt-smoke.sh",
+      "bytes": 14918
+    },
+    {
+      "path": "scripts/phase35-governance-remediation-check.py",
+      "bytes": 2327
+    },
+    {
+      "path": "scripts/phase35-governance-remediation-smoke.sh",
+      "bytes": 17547
+    },
+    {
+      "path": "scripts/phase36-governance-four-eyes-check.py",
+      "bytes": 2717
+    },
+    {
+      "path": "scripts/phase36-governance-four-eyes-smoke.sh",
+      "bytes": 19273
+    },
+    {
+      "path": "scripts/phase37-governance-approval-lifecycle-check.py",
+      "bytes": 2492
+    },
+    {
+      "path": "scripts/phase37-governance-approval-lifecycle-smoke.sh",
+      "bytes": 20849
+    },
+    {
+      "path": "scripts/phase38-governance-ha-check.py",
+      "bytes": 2926
+    },
+    {
+      "path": "scripts/phase38-governance-ha-smoke.sh",
+      "bytes": 23619
+    },
+    {
+      "path": "scripts/phase39-governance-rotation-check.py",
+      "bytes": 2028
+    },
+    {
+      "path": "scripts/phase39-governance-rotation-smoke.sh",
+      "bytes": 19844
+    },
+    {
+      "path": "scripts/phase40-governance-key-retirement-check.py",
+      "bytes": 2622
+    },
+    {
+      "path": "scripts/phase40-governance-key-retirement-smoke.sh",
+      "bytes": 22996
+    },
+    {
+      "path": "scripts/phase41-oidc-mock/main.go",
+      "bytes": 3653
+    },
+    {
+      "path": "scripts/phase41-oidc-rbac-check.py",
+      "bytes": 1479
+    },
+    {
+      "path": "scripts/phase41-oidc-rbac-smoke.sh",
+      "bytes": 4186
+    },
+    {
+      "path": "scripts/phase42-mysql-ha-pitr-check.py",
+      "bytes": 1314
+    },
+    {
+      "path": "scripts/phase42-mysql-ha-pitr-smoke.sh",
+      "bytes": 8310
+    },
+    {
+      "path": "scripts/phase43-slo-observability-check.py",
+      "bytes": 1884
+    },
+    {
+      "path": "scripts/phase43-slo-observability-smoke.sh",
+      "bytes": 3003
+    },
+    {
+      "path": "scripts/phase44-supply-chain-check.py",
+      "bytes": 1216
+    },
+    {
+      "path": "scripts/phase44-supply-chain-smoke.sh",
+      "bytes": 1956
+    },
+    {
+      "path": "scripts/phase45-multiregion-failover-check.py",
+      "bytes": 1451
+    },
+    {
+      "path": "scripts/phase45-multiregion-failover-smoke.sh",
+      "bytes": 7945
+    },
+    {
+      "path": "scripts/portfolio-seal-check.py",
+      "bytes": 2671
+    },
+    {
+      "path": "scripts/release-k8s-keda-check.py",
+      "bytes": 1890
+    },
+    {
+      "path": "scripts/release-k8s-keda-smoke.sh",
+      "bytes": 11219
+    },
+    {
+      "path": "scripts/release-kafka-dlq-check.py",
+      "bytes": 1786
+    },
+    {
+      "path": "scripts/release-kafka-dlq-smoke.sh",
+      "bytes": 10051
+    },
+    {
+      "path": "scripts/release-s3-minio-check.py",
+      "bytes": 2192
+    },
+    {
+      "path": "scripts/release-s3-minio-smoke.sh",
+      "bytes": 11188
+    },
+    {
+      "path": "scripts/release-s3-tool/main.go",
+      "bytes": 2531
+    },
+    {
+      "path": "scripts/siem-sink-mock.py",
+      "bytes": 19623
+    },
+    {
+      "path": "scripts/smoke.sh",
+      "bytes": 780
+    },
+    {
+      "path": "scripts/taskflowctl-keycloak-smoke.sh",
+      "bytes": 3959
+    },
+    {
+      "path": "security/SUPPLY_CHAIN_POLICY.md",
+      "bytes": 1091
+    }
+  ],
+  "scope": "Current non-ignored source working tree; excludes .git and ignored runtime data, credentials and binaries."
+}

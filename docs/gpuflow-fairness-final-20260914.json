@@ -1,0 +1,72 @@
+{
+  "validated_at": "2026-09-14",
+  "scope": "synthetic GPU scheduling control plane; not GPU training throughput",
+  "workload": {
+    "dispatches_per_run": 1200,
+    "tenant_weights": {
+      "team-a": 1,
+      "team-b": 1,
+      "team-c": 2
+    },
+    "expected_weighted_share": {
+      "team-a": 0.25,
+      "team-b": 0.25,
+      "team-c": 0.5
+    }
+  },
+  "runs": [
+    {
+      "run": 1,
+      "decisions_per_sec": 1258.7787280946434,
+      "jain_fairness_normalized_by_weight": 1.0,
+      "tenant_dispatch": {
+        "team-a": 300,
+        "team-b": 300,
+        "team-c": 600
+      }
+    },
+    {
+      "run": 2,
+      "decisions_per_sec": 1276.3207749477692,
+      "jain_fairness_normalized_by_weight": 1.0,
+      "tenant_dispatch": {
+        "team-a": 300,
+        "team-b": 300,
+        "team-c": 600
+      }
+    },
+    {
+      "run": 3,
+      "decisions_per_sec": 1256.058244986706,
+      "jain_fairness_normalized_by_weight": 1.0,
+      "tenant_dispatch": {
+        "team-a": 300,
+        "team-b": 300,
+        "team-c": 600
+      }
+    }
+  ],
+  "summary": {
+    "median_decisions_per_sec": 1258.7787280946434,
+    "throughput_cv_pct": 0.8702633750996711,
+    "jain_fairness_normalized_by_weight": 1.0,
+    "tenant_share": {
+      "team-a": 0.25,
+      "team-b": 0.25,
+      "team-c": 0.5
+    }
+  },
+  "recovery_smoke": {
+    "sequence": [
+      "schedule low-priority checkpointable job",
+      "schedule urgent higher-priority job",
+      "preempt low-priority job",
+      "automatically requeue checkpoint-safe victim",
+      "release urgent job",
+      "automatically redispatch requeued low-priority job"
+    ],
+    "preemptions_total": 1,
+    "requeued_total": 1,
+    "pending_after_recovery": 0
+  }
+}

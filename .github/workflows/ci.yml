@@ -1,0 +1,291 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.26.8'
+          cache: true
+      - name: Download modules
+        run: go mod download
+      - name: Module tidy check
+        run: go mod tidy -diff -go=1.25.0
+      - name: Format check
+        run: test -z "$(gofmt -l ./cmd ./internal ./pkg scripts/ai-phase7-client.go scripts/ai-phase10-client/main.go scripts/phase41-oidc-mock.go)"
+      - name: Build customer-facing taskflowctl
+        run: go build -o /tmp/taskflowctl ./cmd/taskflowctl
+      - name: Vet
+        run: go vet ./...
+      - name: Unit tests with race detector
+        run: go test -race ./...
+      - name: Build binary
+        run: |
+          CGO_ENABLED=0 go build ./cmd/server
+          CGO_ENABLED=0 go build ./cmd/executor-worker
+          CGO_ENABLED=0 go build ./cmd/schema-migrate
+          CGO_ENABLED=0 go build ./scripts/ai-phase7-client.go
+          CGO_ENABLED=0 go build ./scripts/ai-phase10-client
+      - name: Script syntax
+        run: |
+          sh -n scripts/keycloak-verify.sh scripts/keycloak-live-smoke.sh scripts/keycloak-stage-up.sh scripts/keycloak-rotation-smoke.sh scripts/keycloak-idp-outage-smoke.sh scripts/keycloak-slo-run.sh scripts/cloud-mixed-version-rollout-smoke.sh
+          sh -n scripts/smoke.sh scripts/grpc-smoke.sh scripts/outbox-recovery.sh scripts/ai-smoke.sh scripts/ai-phase2-smoke.sh scripts/ai-phase3-smoke.sh scripts/ai-phase4-smoke.sh scripts/ai-phase5-smoke.sh scripts/ai-phase6-smoke.sh scripts/ai-phase7-smoke.sh scripts/ai-phase8-smoke.sh scripts/ai-phase9-smoke.sh scripts/ai-phase10-smoke.sh scripts/ai-phase11-smoke.sh scripts/phase12-autoscaling-smoke.sh scripts/phase13-drain-smoke.sh scripts/phase14-availability-smoke.sh scripts/phase15-reconciler-smoke.sh scripts/phase16-enqueue-fencing-smoke.sh scripts/phase17-compaction-smoke.sh scripts/phase18-dlq-smoke.sh scripts/phase19-dlq-lifecycle-smoke.sh scripts/phase20-dlq-archive-smoke.sh scripts/phase21-dlq-archive-object-smoke.sh scripts/phase22-control-plane-auth-smoke.sh scripts/phase23-control-plane-audit-smoke.sh scripts/phase24-control-plane-integrity-smoke.sh scripts/phase25-siem-delivery-smoke.sh scripts/phase26-siem-ha-kms-smoke.sh scripts/phase27-siem-exactly-once-dr-smoke.sh scripts/phase28-vault-credentials-reconcile-smoke.sh scripts/phase29-receiver-failover-dr-smoke.sh scripts/phase30-receiver-term-failback-dr-smoke.sh scripts/phase31-promotion-workflow-rpo-smoke.sh scripts/phase32-governance-smoke.sh scripts/phase33-governance-retry-smoke.sh scripts/phase34-governance-debt-smoke.sh scripts/phase35-governance-remediation-smoke.sh scripts/phase36-governance-four-eyes-smoke.sh scripts/phase37-governance-approval-lifecycle-smoke.sh scripts/phase38-governance-ha-smoke.sh scripts/phase39-governance-rotation-smoke.sh scripts/phase40-governance-key-retirement-smoke.sh scripts/phase41-oidc-rbac-smoke.sh scripts/phase42-mysql-ha-pitr-smoke.sh scripts/phase43-slo-observability-smoke.sh scripts/phase44-supply-chain-smoke.sh scripts/phase45-multiregion-failover-smoke.sh scripts/release-kafka-dlq-smoke.sh scripts/release-k8s-keda-smoke.sh scripts/release-s3-minio-smoke.sh scripts/perf-benchmark.sh scripts/perf-multi.sh scripts/perf-ab.sh scripts/gate.sh
+          python3 -m py_compile scripts/perf-load.py scripts/perf_multi.py scripts/perf_multi_test.py scripts/perf_benchmark_test.py scripts/ai-gateway-mock.py scripts/siem-sink-mock.py scripts/kms-signer-mock.py scripts/aws-kms-mock.py scripts/aws-credentials-mock.py scripts/phase32-governance-mock.py scripts/phase33-governance-retry-check.py scripts/phase34-governance-debt-check.py scripts/phase35-governance-remediation-check.py scripts/phase36-governance-four-eyes-check.py scripts/phase37-governance-approval-lifecycle-check.py scripts/phase38-governance-ha-check.py scripts/phase39-governance-rotation-check.py scripts/phase40-governance-key-retirement-check.py scripts/phase41-oidc-rbac-check.py scripts/phase42-mysql-ha-pitr-check.py scripts/phase43-slo-observability-check.py scripts/phase44-supply-chain-check.py scripts/phase45-multiregion-failover-check.py scripts/phase12-keda-check.py scripts/phase13-k8s-check.py scripts/phase14-k8s-check.py scripts/phase15-coordination-check.py scripts/phase16-fencing-check.py scripts/phase17-compaction-check.py scripts/phase18-dlq-check.py scripts/phase19-dlq-lifecycle-check.py scripts/phase20-dlq-archive-check.py scripts/phase21-dlq-archive-object-check.py scripts/phase22-control-plane-auth-check.py scripts/phase23-control-plane-audit-check.py scripts/phase24-control-plane-integrity-check.py scripts/phase25-siem-delivery-check.py scripts/phase26-siem-ha-kms-check.py scripts/phase27-siem-exactly-once-dr-check.py scripts/phase28-vault-credentials-reconcile-check.py scripts/phase29-receiver-failover-dr-check.py scripts/phase30-receiver-term-failback-dr-check.py scripts/phase31-promotion-workflow-rpo-check.py scripts/phase32-governance-check.py scripts/release-kafka-dlq-check.py scripts/release-k8s-keda-check.py scripts/release-s3-minio-check.py
+          PYTHONPATH=scripts python3 -m unittest scripts/perf_multi_test.py scripts/perf_benchmark_test.py
+          python3 scripts/phase12-keda-check.py
+          python3 scripts/phase13-k8s-check.py
+          python3 scripts/phase14-k8s-check.py
+          python3 scripts/phase15-coordination-check.py
+          python3 scripts/phase16-fencing-check.py
+          python3 scripts/phase17-compaction-check.py
+          python3 scripts/phase18-dlq-check.py
+          python3 scripts/phase19-dlq-lifecycle-check.py
+          python3 scripts/phase20-dlq-archive-check.py
+          python3 scripts/phase21-dlq-archive-object-check.py
+          python3 scripts/phase22-control-plane-auth-check.py
+          python3 scripts/phase23-control-plane-audit-check.py
+          python3 scripts/phase24-control-plane-integrity-check.py
+          python3 scripts/phase25-siem-delivery-check.py
+          python3 scripts/phase26-siem-ha-kms-check.py
+          python3 scripts/phase27-siem-exactly-once-dr-check.py
+          python3 scripts/phase28-vault-credentials-reconcile-check.py
+          python3 scripts/phase29-receiver-failover-dr-check.py
+          python3 scripts/phase30-receiver-term-failback-dr-check.py
+          python3 scripts/phase31-promotion-workflow-rpo-check.py
+          python3 scripts/phase32-governance-check.py
+          python3 scripts/phase33-governance-retry-check.py
+          python3 scripts/phase34-governance-debt-check.py
+          python3 scripts/phase35-governance-remediation-check.py
+          python3 scripts/phase36-governance-four-eyes-check.py
+          python3 scripts/phase37-governance-approval-lifecycle-check.py
+          python3 scripts/phase38-governance-ha-check.py
+          python3 scripts/phase39-governance-rotation-check.py
+          python3 scripts/phase40-governance-key-retirement-check.py
+          python3 scripts/phase41-oidc-rbac-check.py
+          python3 scripts/phase42-mysql-ha-pitr-check.py
+          python3 scripts/phase43-slo-observability-check.py
+          python3 scripts/phase44-supply-chain-check.py
+          python3 scripts/phase45-multiregion-failover-check.py
+          python3 scripts/release-kafka-dlq-check.py
+          python3 scripts/release-k8s-keda-check.py
+          python3 scripts/release-s3-minio-check.py
+
+  tenant-isolation:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_ROOT_PASSWORD: taskflow_ci_only
+          MYSQL_DATABASE: taskflow_tenant_ci
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -ptaskflow_ci_only"
+          --health-interval=5s --health-timeout=5s --health-retries=20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.26.8'
+          cache: true
+      - name: Create isolated migration schema
+        run: docker exec "$(docker ps --filter ancestor=mysql:8.4 -q | head -1)" mysql -uroot -ptaskflow_ci_only -e 'CREATE DATABASE taskflow_schema_ci; CREATE DATABASE taskflow_service_ci; CREATE DATABASE taskflow_workflow_schema_ci'
+      - name: Cross-tenant MySQL authorization test
+        env:
+          TASKFLOW_MYSQL_INTEGRATION_DSN: 'root:taskflow_ci_only@tcp(127.0.0.1:3306)/taskflow_tenant_ci?parseTime=true&charset=utf8mb4'
+        run: |
+          go test -count=1 ./internal/repository -run '^TestCloudTenantScopeMySQLIntegration$'
+          go test -count=1 ./internal/handler -run '^TestCloudTenantRouterMySQLIntegration$'
+      - name: Expand/contract schema compatibility test
+        env:
+          TASKFLOW_SCHEMA_MIGRATION_TEST_DSN: 'root:taskflow_ci_only@tcp(127.0.0.1:3306)/taskflow_schema_ci?parseTime=true&charset=utf8mb4'
+        run: go test -count=1 ./internal/schemamigrate -run '^TestCloudOrdersExpandContractMySQL$'
+      - name: Managed Saga workflow schema migration and fail-closed startup
+        env:
+          TASKFLOW_MANAGED_WORKFLOW_TEST_DSN: 'root:taskflow_ci_only@tcp(127.0.0.1:3306)/taskflow_workflow_schema_ci?parseTime=true&charset=utf8mb4'
+        run: go test -count=1 ./internal/repository -run '^TestManagedWorkflowSchemaMySQL$'
+      - name: Isolated real-MySQL Saga regression
+        env:
+          TASKFLOW_MYSQL_INTEGRATION_DSN: 'root:taskflow_ci_only@tcp(127.0.0.1:3306)/taskflow_service_ci?parseTime=true&charset=utf8mb4'
+        run: go test -count=1 ./internal/service -run '^TestCloudWorkflowSagaIntegration$'
+
+  keycloak-idp:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Generate disposable Keycloak lab passwords
+        run: |
+          echo "KEYCLOAK_DB_PASSWORD=$(openssl rand -hex 24)" >> "$GITHUB_ENV"
+          echo "KEYCLOAK_ADMIN_PASSWORD=$(openssl rand -hex 24)" >> "$GITHUB_ENV"
+      - name: Start real Keycloak 26.8 and isolated PostgreSQL
+        run: docker compose -f deploy/keycloak/compose.yaml up -d --no-build
+      - name: Wait for OIDC discovery
+        run: |
+          for _ in $(seq 1 90); do
+            if curl -fsS --max-time 2 http://127.0.0.1:18090/realms/taskflow-lab/.well-known/openid-configuration >/dev/null 2>&1; then
+              exit 0
+            fi
+            sleep 2
+          done
+          docker compose -f deploy/keycloak/compose.yaml logs --tail=100 keycloak
+          exit 1
+      - name: Real Keycloak client_credentials and cross-tenant MySQL verification
+        run: sh scripts/keycloak-verify.sh
+      - name: Build isolated TaskFlow API test image
+        run: docker build -t taskflow-go:enterprise-acceptance-20261009 .
+      - name: Start independent OIDC-only TaskFlow API
+        run: sh scripts/keycloak-stage-up.sh
+      - name: Live OIDC authorization smoke
+        run: sh scripts/keycloak-live-smoke.sh
+      - name: Real consumer command-line API smoke
+        run: sh scripts/taskflowctl-keycloak-smoke.sh
+      - name: Rotate Keycloak RSA signing key and verify overlap
+        run: sh scripts/keycloak-rotation-smoke.sh
+      - name: Stop and recover isolated Keycloak identity provider
+        run: sh scripts/keycloak-idp-outage-smoke.sh
+      - name: Bound short OIDC SLO regression gate
+        run: sh scripts/keycloak-slo-run.sh --duration 20 --rate 20 --concurrency 8 --output /tmp/taskflow-keycloak-ci-slo.json
+      - name: Checkpointed 72-hour runner smoke (18 seconds, not a full soak)
+        run: python3 scripts/keycloak-72h-soak.py --hours 0.005 --window-seconds 9 --rate 10 --concurrency 4 --output /tmp/taskflow-oidc-soak-ci-pilot
+      - name: Tear down disposable identity lab
+        if: always()
+        run: |
+          docker rm -f taskflow-keycloak-stage taskflow-keycloak-redis-stage taskflow-keycloak-mysql-ci >/dev/null 2>&1 || true
+          docker compose -f deploy/keycloak/compose.yaml down --volumes --remove-orphans
+
+  keycloak-production-mode-tls:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check HTTPS production-mode rehearsal script syntax
+        run: bash -n scripts/keycloak-production-mode-smoke.sh
+      - name: Start Keycloak in production mode with throwaway HTTPS, check trust and cleanup
+        run: bash scripts/keycloak-production-mode-smoke.sh
+
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate Compose
+        run: docker compose config >/dev/null
+      - name: Build image
+        run: docker build -t taskflow-go:ci .
+
+  integration:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Start gRPC stack
+        run: docker compose --profile ai-smoke up -d --build mysql redis ai-gateway executor-worker taskflow
+      - name: gRPC smoke test
+        run: bash scripts/grpc-smoke.sh
+      - name: Transactional outbox recovery test
+        run: bash scripts/outbox-recovery.sh
+      - name: AI task pipeline smoke test
+        run: bash scripts/ai-smoke.sh
+      - name: AI provider fallback and usage metrics smoke test
+        run: bash scripts/ai-phase2-smoke.sh
+      - name: AI OpenAI-compatible smart routing smoke test
+        run: bash scripts/ai-phase3-smoke.sh
+      - name: AI durable governance audit and replay smoke test
+        run: bash scripts/ai-phase4-smoke.sh
+      - name: AI budget quota and admission control smoke test
+        run: bash scripts/ai-phase5-smoke.sh
+      - name: AI SLO concurrency and backpressure smoke test
+        run: bash scripts/ai-phase6-smoke.sh
+      - name: AI distributed concurrency and adaptive load shedding smoke test
+        run: bash scripts/ai-phase7-smoke.sh
+      - name: AI hedged requests and tail latency control smoke test
+        run: bash scripts/ai-phase8-smoke.sh
+      - name: AI tenant fair scheduling and starvation protection smoke test
+        run: bash scripts/ai-phase9-smoke.sh
+      - name: AI distributed tenant concurrency quota smoke test
+        run: bash scripts/ai-phase10-smoke.sh
+      - name: AI runtime-governed tenant quota policy smoke test
+        run: bash scripts/ai-phase11-smoke.sh
+      - name: Queue-aware autoscaling guardrail smoke test
+        run: bash scripts/phase12-autoscaling-smoke.sh
+      - name: Graceful scale-down drain fencing smoke test
+        run: bash scripts/phase13-drain-smoke.sh
+      - name: Kubernetes disruption and rollout availability guardrail test
+        run: bash scripts/phase14-availability-smoke.sh
+      - name: Distributed reconciler coordination smoke test
+        run: bash scripts/phase15-reconciler-smoke.sh
+      - name: Per-task enqueue visibility and generation fencing smoke test
+        run: bash scripts/phase16-enqueue-fencing-smoke.sh
+      - name: Redis Stream acknowledged-history compaction smoke test
+        run: bash scripts/phase17-compaction-smoke.sh
+      - name: Poison-message quarantine and controlled replay smoke test
+        run: bash scripts/phase18-dlq-smoke.sh
+      - name: Dead-letter lifecycle governance smoke test
+        run: bash scripts/phase19-dlq-lifecycle-smoke.sh
+      - name: Dead-letter archive export and restore smoke test
+        run: bash scripts/phase20-dlq-archive-smoke.sh
+      - name: Archive object lifecycle governance smoke test
+        run: bash scripts/phase21-dlq-archive-object-smoke.sh
+      - name: Control-plane authentication smoke test
+        run: bash scripts/phase22-control-plane-auth-smoke.sh
+      - name: Control-plane durable audit and token rotation smoke test
+        run: bash scripts/phase23-control-plane-audit-smoke.sh
+      - name: Control-plane audit integrity retention and SIEM export smoke test
+        run: bash scripts/phase24-control-plane-integrity-smoke.sh
+      - name: Signed SIEM delivery outbox retry and DLQ smoke test
+        run: bash scripts/phase25-siem-delivery-smoke.sh
+      - name: SIEM HA fencing remote KMS rotation and history GC smoke test
+        run: bash scripts/phase26-siem-ha-kms-smoke.sh
+      - name: SIEM acknowledged exactly-once acceptance direct AWS KMS and DR smoke test
+        run: bash scripts/phase27-siem-exactly-once-dr-smoke.sh
+      - name: Vault Transit AWS workload identity and receiver-checkpoint recovery smoke test
+        run: bash scripts/phase28-vault-credentials-reconcile-smoke.sh
+      - name: Signed receiver checkpoint sticky failover and multi-receiver DR smoke test
+        run: bash scripts/phase29-receiver-failover-dr-smoke.sh
+      - name: Receiver term fencing anti-entropy controlled failback and DR smoke test
+        run: bash scripts/phase30-receiver-term-failback-dr-smoke.sh
+      - name: Coordinated SIEM promotion approval term ledger and RPO fencing smoke test
+        run: bash scripts/phase31-promotion-workflow-rpo-smoke.sh
+      - name: Break-glass quorum governance external term anchor and incident evidence smoke test
+        run: bash scripts/phase32-governance-smoke.sh
+      - name: Durable governance retry and outage reconciliation smoke test
+        run: bash scripts/phase33-governance-retry-smoke.sh
+      - name: Governance debt SLO observability and promotion safety fence smoke test
+        run: bash scripts/phase34-governance-debt-smoke.sh
+      - name: Controlled governance dead-evidence remediation smoke test
+        run: bash scripts/phase35-governance-remediation-smoke.sh
+      - name: Four-eyes governance remediation and idempotent approval smoke test
+        run: bash scripts/phase36-governance-four-eyes-smoke.sh
+      - name: Governance remediation approval lifecycle and stale-target fencing smoke test
+        run: bash scripts/phase37-governance-approval-lifecycle-smoke.sh
+      - name: Signed governance replica quorum and consistency fencing smoke test
+        run: bash scripts/phase38-governance-ha-smoke.sh
+      - name: Governance receipt key rotation and membership epoch fencing smoke test
+        run: bash scripts/phase39-governance-rotation-smoke.sh
+      - name: Bounded governance receipt-key retirement and anti-rollback fencing smoke test
+        run: bash scripts/phase40-governance-key-retirement-smoke.sh
+      - name: OIDC JWT and control-plane group RBAC smoke test
+        run: bash scripts/phase41-oidc-rbac-smoke.sh
+      - name: MySQL GTID HA backup and PITR smoke test
+        run: bash scripts/phase42-mysql-ha-pitr-smoke.sh
+      - name: SLO Alertmanager and Grafana observability smoke test
+        run: bash scripts/phase43-slo-observability-smoke.sh
+      - name: Software supply-chain SBOM and vulnerability gate smoke test
+        run: bash scripts/phase44-supply-chain-smoke.sh
+      - name: Multi-region writer promotion and global traffic failover smoke test
+        run: bash scripts/phase45-multiregion-failover-smoke.sh
+      - name: Real Kafka poison and DLQ integration release evidence
+        run: bash scripts/release-kafka-dlq-smoke.sh
+      - name: Real MinIO S3 primary and replica release evidence
+        run: bash scripts/release-s3-minio-smoke.sh
+      - name: Show logs on failure
+        if: failure()
+        run: docker compose --profile ai-smoke --profile phase7-smoke --profile phase25-smoke --profile phase26-smoke --profile phase27-smoke --profile phase28-smoke --profile phase29-smoke --profile phase30-smoke --profile phase31-smoke --profile phase32-smoke --profile phase33-smoke --profile phase34-smoke --profile phase35-smoke --profile phase36-smoke --profile phase37-smoke --profile phase38-smoke --profile phase39-smoke --profile phase40-smoke --profile phase41-smoke --profile phase42-smoke --profile phase43-smoke --profile phase45-smoke --profile kafka --profile archive-s3 logs --no-color taskflow taskflow-region-b global-router executor-worker executor-worker-alt ai-gateway ai-gateway-fail ai-gateway-alt ai-gateway-slow oidc-mock mysql mysql-replica alertmanager grafana siem-sink siem-sink-secondary siem-governance siem-governance-secondary kms-signer aws-kms aws-credentials vault kafka minio-primary minio-replica
+      - name: Stop stack
+        if: always()
+        run: docker compose --profile ai-smoke --profile phase7-smoke --profile phase25-smoke --profile phase26-smoke --profile phase27-smoke --profile phase28-smoke --profile phase29-smoke --profile phase30-smoke --profile phase31-smoke --profile phase32-smoke --profile phase33-smoke --profile phase34-smoke --profile phase35-smoke --profile phase36-smoke --profile phase37-smoke --profile phase38-smoke --profile phase39-smoke --profile phase40-smoke --profile phase41-smoke --profile phase42-smoke --profile phase43-smoke --profile phase45-smoke --profile kafka --profile archive-s3 down -v

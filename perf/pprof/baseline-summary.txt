@@ -1,0 +1,24 @@
+TaskFlow baseline pprof evidence — 2026-09-04
+
+Primary 10-second CPU profile:
+  total CPU samples: 14.10 CPU-seconds
+  internal/runtime/syscall/linux.Syscall6      39.65% flat
+  TaskRepository.CreateWithOutbox              31.84% cumulative
+  database/sql.(*DB).retry                     24.11% cumulative
+  database/sql.withLock                        17.02% cumulative
+  synchronous access-log lines during run      64,799
+
+Earlier focused pre-hot-path-rewrite profile:
+  TaskRepository.CreateWithOutbox              48.19% cumulative
+  GORM create processor                        36.48% cumulative
+
+Allocation-space evidence:
+  total cumulative allocations                 1,146.12 MiB
+  gorm.Statement.clone                         175.57 MiB flat
+  gorm.Statement.AddClause                      99.57 MiB flat
+  ConvertToCreateValues                         79.55 MiB flat
+
+Interpretation:
+  The create endpoint was database/ORM/syscall bound rather than goroutine or
+  executor-CPU bound. The optimization target was therefore the two INSERTs in
+  the atomic task + outbox transaction, not the worker pool.
