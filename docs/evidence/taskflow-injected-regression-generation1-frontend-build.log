@@ -1,0 +1,13 @@
+
+> change-workspace-business-demo@0.1.0 build
+> vue-tsc --noEmit && vite build
+
+vite v7.1.9 building for production...
+transforming...
+✓ 13 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                  0.42 kB │ gzip:  0.33 kB
+dist/assets/index-omCzN-mZ.css  10.96 kB │ gzip:  3.14 kB
+dist/assets/index-DvlO-rGs.js   77.63 kB │ gzip: 31.05 kB
+✓ built in 1.02s

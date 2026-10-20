@@ -1,6 +1,6 @@
 # Verification implementation and evidence
 
-The vNext verification API, Go SDK/CLI and trusted Linux execution path are implemented and consumed by the isolated development service on port 18089. Start with [LOCAL_DEVELOPMENT.md](../LOCAL_DEVELOPMENT.md) for actual usage; the independent environment is managed through the [integration entry point](../../../ops/change-workspace-dev/README.md).
+The vNext verification API, Go SDK/CLI and trusted Linux execution path are implemented and consumed by the isolated development service on port 18089. Start with [LOCAL_DEVELOPMENT.md](../LOCAL_DEVELOPMENT.md) for actual usage; the independent environment is managed through the [standalone Linux quickstart](VERIFICATION_QUICKSTART.md).
 
 ## Source baseline / M0
 
@@ -12,7 +12,7 @@ Windows Go1.26.4:
 $env:GOTOOLCHAIN='local'
 $env:GOWORK='off'
 $env:GOCACHE=Join-Path $PWD 'tmp\go-build-cache'
-$env:GOMODCACHE='C:\Users\Admin\Desktop\any\PayRecon\.runtime\gomod-windows'
+$env:GOMODCACHE=Join-Path $PWD 'tmp\gomod-cache'
 go test -count=1 ./internal/domain ./internal/verification ./pkg/cloudclient ./cmd/taskflowctl
 ```
 
@@ -55,11 +55,11 @@ Integration owner supplied Ubuntu-24.04 and isolated `taskflow_next_test`. Initi
 - PASS: deterministic shutdown/settlement race for completed failed and passed reports. Neither becomes pending or receives a new generation; only incomplete shutdown work follows recovery. Evidence: `docs/VERIFICATION_SHUTDOWN_RACE_20261019.log`.
 - PASS from integration owner's unchanged candidate tests: 12 concurrent same-UUID requests create one run/task/outbox; UUID conflict; stale recovery and old-generation renew/settle rejection; handler authentication/project denial. Those unaffected tests were not rerun for the PAX-only correction.
 
-Executor/Worker correction evidence: `docs/VERIFICATION_RUNTIME_CHECKS_20261019.log`. Earlier integration-owner records: `C:\Users\Admin\Desktop\any\PayRecon\ops\change-workspace-dev\runtime\test-logs`.
+Executor/Worker correction evidence: `docs/VERIFICATION_RUNTIME_CHECKS_20261019.log`. Earlier machine-local runtime logs were retained by the integration owner; reproducible commands and public run records are included here.
 
 ### Actual API/CLI business replay
 
-The integration owner ran the real CLI against the ready service and saved [the complete run responses and checks](../../../docs/resume_jd_20261019/evidence/taskflow-replay-results.json), plus the six actual check logs in the same evidence directory. The supplied sample is self-owned and uses controlled fault injection.
+The integration owner ran the real CLI against the ready service and saved [the complete run responses and checks](evidence/taskflow-replay-results.json), plus the six actual check logs in the same evidence directory. The supplied sample is self-owned and uses controlled fault injection.
 
 | Run | Code commit | Observed result |
 | --- | --- | --- |
@@ -72,7 +72,7 @@ The same replay verified CLI submit/get, identical UUID returning the same task,
 
 The shutdown-race candidate was built separately as `bin/taskflow-server-linux-next`, then consumed by the integration owner during an idle normal stop/start into stable `bin/taskflow-server-linux`.
 
-The integration owner then performed a real SIGKILL/restart during run `316a368c-4d29-4abe-b044-0b9eff318f6d`, task 3, at fixed commit `1750bd795b9a002fb4b0c2aa6a64946070796aa1`. After natural lease expiry, the same run/task recovered as generation 2. Generation 1 remains `incomplete` with its partial checks; generation 2 passed 3/3 checks and the task reached success. The [full before/after recovery record](../../../docs/resume_jd_20261019/evidence/taskflow-abrupt-recovery.json) preserves both attempts. This observed process recovery is separate from deterministic repository/fencing and shutdown-settlement race tests.
+The integration owner then performed a real SIGKILL/restart during run `316a368c-4d29-4abe-b044-0b9eff318f6d`, task 3, at fixed commit `1750bd795b9a002fb4b0c2aa6a64946070796aa1`. After natural lease expiry, the same run/task recovered as generation 2. Generation 1 remains `incomplete` with its partial checks; generation 2 passed 3/3 checks and the task reached success. The [full before/after recovery record](evidence/taskflow-abrupt-recovery.json) preserves both attempts. This observed process recovery is separate from deterministic repository/fencing and shutdown-settlement race tests.
 
 Source/contract changes do not require rerunning unchanged checks solely for reassurance.
 

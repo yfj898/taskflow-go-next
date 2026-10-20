@@ -1,0 +1,32 @@
+name: taskflow-verification-lab
+services:
+  mysql:
+    image: mysql:8.4
+    environment:
+      MYSQL_DATABASE: taskflow_verification
+      MYSQL_USER: taskflow_lab
+      MYSQL_PASSWORD: ${TF_MYSQL_PASSWORD:?generate a local .env first}
+      MYSQL_ROOT_PASSWORD: ${TF_MYSQL_ROOT_PASSWORD:?generate a local .env first}
+    ports:
+      - "127.0.0.1:23316:3306"
+    volumes:
+      - mysql:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "MYSQL_PWD=$$MYSQL_PASSWORD mysqladmin ping -h 127.0.0.1 -u $$MYSQL_USER --silent"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+  redis:
+    image: redis:7.4-alpine
+    ports:
+      - "127.0.0.1:26389:6379"
+    volumes:
+      - redis:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+volumes:
+  mysql:
+  redis:

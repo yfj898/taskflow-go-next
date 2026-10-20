@@ -4,6 +4,12 @@ on:
   pull_request:
   push:
     branches: [main]
+  workflow_dispatch:
+    inputs:
+      publish_image:
+        description: 'Publish and attest a container image (explicit opt-in)'
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -43,7 +49,7 @@ jobs:
           path: taskflow.spdx.json
 
   sign-and-attest:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'workflow_dispatch' && inputs.publish_image && github.ref == 'refs/heads/main'
     needs: scan
     runs-on: ubuntu-latest
     permissions:

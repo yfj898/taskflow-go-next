@@ -1,0 +1,38 @@
+name: verification
+on:
+  push:
+    branches: [main]
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  verification:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_ROOT_PASSWORD: verification_ci_only
+          MYSQL_DATABASE: taskflow_verification_ci
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -pverification_ci_only"
+          --health-interval=5s --health-timeout=5s --health-retries=20
+    env:
+      TASKFLOW_MYSQL_INTEGRATION_DSN: 'root:verification_ci_only@tcp(127.0.0.1:3306)/taskflow_verification_ci?parseTime=true&charset=utf8mb4'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.26.8'
+          cache: true
+      - name: Verification unit, Linux executor and isolated MySQL tests
+        run: go test -p 1 -count=1 ./internal/domain ./internal/verification ./internal/executor ./internal/worker ./internal/service ./internal/repository ./internal/handler ./pkg/cloudclient ./cmd/taskflowctl
+      - name: Vet changed paths
+        run: go vet ./internal/executor ./internal/worker ./internal/service ./internal/repository ./internal/handler ./pkg/cloudclient ./cmd/taskflowctl
+      - name: Build retained entry points
+        run: |
+          go build -o /tmp/taskflowctl ./cmd/taskflowctl
+          go build -o /tmp/taskflow-server ./cmd/server
+          go build -o /tmp/schema-migrate ./cmd/schema-migrate

@@ -1,0 +1,77 @@
+
+> change-workspace-business-demo@0.1.0 verify:frontend-test
+> node ../scripts/frontend-check.mjs
+
+Preparing locked frontend dependencies; cache=<WORKSPACE>/.runtime/npm-cache-linux-demo
+npm warn deprecated whatwg-encoding@3.1.1: Use @exodus/bytes instead for a more spec-conformant and faster implementation
+npm warn deprecated glob@10.5.0: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+
+added 173 packages in 27s
+
+> change-workspace-business-demo@0.1.0 test
+> vitest run
+
+
+ RUN  v3.2.4 <WORKSPACE>/ops/change-workspace-dev/runtime/verification-work/b35d63d6-be40-4d94-94de-3393632cf722/1/source/frontend
+
+ ❯ src/domain.test.ts (6 tests | 1 failed) 16ms
+   × catalog rules > keeps null delivery explicit for presale 10ms
+     → expected '预计 1970/01/01 08:00（北京时间）' to be '交付时间待定' // Object.is equality
+   ✓ catalog rules > converts the same instant to Beijing time, independent of host timezone 3ms
+   ✓ catalog rules > does not invent a delivery estimate for available/unavailable products 0ms
+   ✓ catalog rules > formats cents as the exact display price 2ms
+   ✓ ticket paging > uses total after filtering 0ms
+   ✓ ticket paging > keeps an empty page navigable as page one 0ms
+ ❯ src/App.test.ts (5 tests | 1 failed) 112ms
+   × business UI > loads and filters catalog, reads detail from the API, and shows null delivery 41ms
+     → expected '预计 1970/01/01 08:00（北京时间）' to be '交付时间待定' // Object.is equality
+   ✓ business UI > changes pagination and resets it when filtering, without sending tenant input 24ms
+   ✓ business UI > saves priority with the revision returned by the server 19ms
+   ✓ business UI > keeps conflicts visible and does not claim saved success 15ms
+   ✓ business UI > renders read-only permission and does not allow a write 14ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/App.test.ts > business UI > loads and filters catalog, reads detail from the API, and shows null delivery
+AssertionError: expected '预计 1970/01/01 08:00（北京时间）' to be '交付时间待定' // Object.is equality
+
+Expected: [32m"交付时间待定"[39m
+Received: [31m"预计 1970/01/01 08:00（北京时间）"[39m
+
+ ❯ src/App.test.ts:33:54
+     31|   it('loads and filters catalog, reads detail from the API, and shows …
+     32|     const {wrapper,fetchMock} = setup();await flushPromises()
+     33|     expect(wrapper.get('.product .delivery').text()).toBe('交付时间待定')
+       |                                                      ^
+     34|     await wrapper.get('select').setValue('presale');await flushPromise…
+     35|     expect(fetchMock).toHaveBeenCalledWith('/api/v2/products?sale_stat…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  src/domain.test.ts > catalog rules > keeps null delivery explicit for presale
+AssertionError: expected '预计 1970/01/01 08:00（北京时间）' to be '交付时间待定' // Object.is equality
+
+Expected: [32m"交付时间待定"[39m
+Received: [31m"预计 1970/01/01 08:00（北京时间）"[39m
+
+ ❯ src/domain.test.ts:5:132
+      3| 
+      4| describe('catalog rules', () => {
+      5|   it('keeps null delivery explicit for presale', () => expect(delivery…
+       |                                                                                                                                    ^
+      6|   it('converts the same instant to Beijing time, independent of host t…
+      7|     expect(deliveryLabel({sale_status: 'presale', expected_delivery_at…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  2 failed | 9 passed (11)
+   Start at  21:58:24
+   Duration  4.70s (transform 239ms, setup 0ms, collect 1.06s, tests 128ms, environment 4.85s, prepare 1.34s)
+
+npm notice
+npm notice New major version of npm available! 11.12.1 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

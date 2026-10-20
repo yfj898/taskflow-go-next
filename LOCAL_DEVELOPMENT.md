@@ -1,15 +1,15 @@
 # TaskFlow-Go vNext：提交一次可信研发验证
 
-本开发版已经提供独立的验证 API、Go SDK、CLI 和 Linux local Executor。它接收注册项目的完整 Git commit，按服务端固定检查模板执行，保存逐项结果、日志和历史 generation。原资源 API/CLI 保持可用；WeKnora 是可选调用方。
+本开发版已经提供独立的验证 API、Go SDK、CLI 和 Linux local Executor。它接收注册项目的完整 Git commit，按服务端固定检查模板执行，保存逐项结果、日志和历史 generation。原资源 API/CLI 保持可用；ChangePilot 是可选调用方。
 
-当前独立开发服务由集成入口管理：`http://127.0.0.1:18089`。启动、正常停止、端口和数据位置见 [独立环境说明](../../ops/change-workspace-dev/README.md)。不要从本目录再起一个抢占相同端口/队列的服务。
+首次独立克隆从 [Linux quickstart](docs/VERIFICATION_QUICKSTART.md) 启动。下文 `18089` 和数据位置属于原隔离验收环境，不要求新用户复用。已有服务时不要再启动一个抢占同端口/队列的进程。
 
 ## 通过 CLI 提交与查询
 
 Windows CLI 使用现有 `TASKFLOW_ACCESS_TOKEN` 环境变量。使用运行环境已经提供的凭据，不把实际 Token 写进请求文件、仓库或日志。Unix 也支持模式 0600 的 `-token-file`；Windows 未实现 ACL 校验，使用该参数会明确报错，不能绕过文件权限判断。
 
 ```powershell
-Set-Location 'C:\Users\Admin\Desktop\any\PayRecon\projects\taskflow-go-next'
+# 在本仓库根目录执行
 $env:TASKFLOW_ENDPOINT = 'http://127.0.0.1:18089'
 New-Item -ItemType Directory -Force -Path tmp | Out-Null
 $request = [ordered]@{
@@ -42,7 +42,7 @@ Go 调用复用 `pkg/cloudclient.Client`，新增方法是 `SubmitVerification`�
 - 实际 SIGKILL 后重启：同一 run `316a368c-4d29-4abe-b044-0b9eff318f6d` / task 3 自然失租后进入 generation 2；generation 1 保留 incomplete，generation 2 的 3/3 检查通过，最终 success。
 - 独立 MySQL 测试验证 12 并发同 UUID 只创建一个 run/Task/Outbox、generation fencing 和恢复；Linux 真命令测试验证固定 commit、不改脏工作区、日志/环境边界。已修复真实 Git PAX 元数据兼容故障及停机与终态结算竞态。
 
-集成结果与六项日志在 [真实回放证据](../../docs/resume_jd_20261019/evidence/taskflow-replay-results.json)，进程中断前后完整记录在 [真实恢复证据](../../docs/resume_jd_20261019/evidence/taskflow-abrupt-recovery.json)。测试与个人改动范围见 [实现说明](docs/VERIFICATION_IMPLEMENTATION.md)。
+集成结果与六项日志在 [真实回放证据](docs/evidence/taskflow-replay-results.json)，进程中断前后完整记录在 [真实恢复证据](docs/evidence/taskflow-abrupt-recovery.json)。测试与个人改动范围见 [实现说明](docs/VERIFICATION_IMPLEMENTATION.md)。
 
 ## 本地构建与相关检查
 
@@ -50,7 +50,7 @@ Go 调用复用 `pkg/cloudclient.Client`，新增方法是 `SubmitVerification`�
 $env:GOTOOLCHAIN = 'local'
 $env:GOWORK = 'off'
 $env:GOCACHE = Join-Path $PWD 'tmp\go-build-cache'
-$env:GOMODCACHE = 'C:\Users\Admin\Desktop\any\PayRecon\.runtime\gomod-windows'
+$env:GOMODCACHE = Join-Path $PWD 'tmp\gomod-cache'
 go test -count=1 ./internal/domain ./internal/verification ./internal/executor ./internal/worker ./internal/service ./internal/repository ./internal/handler ./pkg/cloudclient ./cmd/taskflowctl
 go vet ./internal/executor ./internal/worker ./internal/service ./internal/repository ./internal/handler ./pkg/cloudclient ./cmd/taskflowctl
 go build -o .\bin\taskflowctl.exe ./cmd/taskflowctl
@@ -74,6 +74,6 @@ Windows 支持 SDK/CLI 和服务源码构建；**新验证执行只在 Linux loc
 
 ## 项目职责
 
-TaskFlow 核心不包含预售、商品或工单优先级字段。新业务包引用注册项目/检查模板；业务规则和人工交接由 WeKnora 负责。固定命令非零退出记录 failed，启动不了或中断记录 incomplete；日志保留具体阶段原因，依赖准备失败不能作为业务断言失败的演示证据。
+TaskFlow 核心不包含预售、商品或工单优先级字段。新业务包引用注册项目/检查模板；业务规则和人工交接由 ChangePilot 负责。固定命令非零退出记录 failed，启动不了或中断记录 incomplete；日志保留具体阶段原因，依赖准备失败不能作为业务断言失败的演示证据。
 
-整体里程碑与跨项目边界见 [详细计划](../../docs/resume_jd_20261019/enterprise_change_workspace_implementation_plan_20261019.md)，其中已执行状态以当前源码和上述实测记录为准。
+跨项目职责见 [项目首页](README.md)，当前可执行入口以 [独立启动说明](docs/VERIFICATION_QUICKSTART.md) 为准。

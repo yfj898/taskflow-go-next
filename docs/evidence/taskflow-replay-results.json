@@ -1,0 +1,116 @@
+{
+  "environment": "Ubuntu-24.04 / TaskFlow local backend / isolated development MySQL+Redis",
+  "source": "Self-owned synthetic regression, not a production incident",
+  "started_at": "2026-10-19T13:56:20.523909+00:00",
+  "runs": {
+    "injected-regression": {
+      "run_id": "b35d63d6-be40-4d94-94de-3393632cf722",
+      "project_id": "change-workspace-demo",
+      "target_commit": "7aca2e8ec80fd4796f7ff8780960bab615340bb5",
+      "check_profile_id": "verify-change",
+      "check_profile_revision": "1",
+      "check_ids": [
+        "backend-test",
+        "frontend-test",
+        "frontend-build"
+      ],
+      "external_snapshot_id": "standalone-replay-injected-regression",
+      "task_id": 1,
+      "status": "failed",
+      "generation": 1,
+      "last_error": "check frontend-test exited with status 1",
+      "attempts": [
+        {
+          "generation": 1,
+          "started_at": "2026-10-19T13:56:20.861998065Z",
+          "finished_at": "2026-10-19T13:58:45.238759954Z",
+          "verdict": "failed",
+          "error": "check frontend-test exited with status 1",
+          "checks": [
+            {
+              "id": "backend-test",
+              "required": true,
+              "status": "passed",
+              "exit_code": 0,
+              "artifact_id": "check-0"
+            },
+            {
+              "id": "frontend-test",
+              "required": true,
+              "status": "failed",
+              "exit_code": 1,
+              "artifact_id": "check-1",
+              "error": "exit status 1"
+            },
+            {
+              "id": "frontend-build",
+              "required": true,
+              "status": "passed",
+              "exit_code": 0,
+              "artifact_id": "check-2"
+            }
+          ]
+        }
+      ],
+      "created_at": "2026-10-19T21:56:20.819+08:00"
+    },
+    "repaired": {
+      "run_id": "28b49b55-8da2-4665-861a-c011875538a3",
+      "project_id": "change-workspace-demo",
+      "target_commit": "1750bd795b9a002fb4b0c2aa6a64946070796aa1",
+      "check_profile_id": "verify-change",
+      "check_profile_revision": "1",
+      "check_ids": [
+        "backend-test",
+        "frontend-test",
+        "frontend-build"
+      ],
+      "external_snapshot_id": "standalone-replay-repaired",
+      "task_id": 2,
+      "status": "success",
+      "generation": 1,
+      "attempts": [
+        {
+          "generation": 1,
+          "started_at": "2026-10-19T13:58:46.580444479Z",
+          "finished_at": "2026-10-19T14:00:03.780082768Z",
+          "verdict": "passed",
+          "checks": [
+            {
+              "id": "backend-test",
+              "required": true,
+              "status": "passed",
+              "exit_code": 0,
+              "artifact_id": "check-0"
+            },
+            {
+              "id": "frontend-test",
+              "required": true,
+              "status": "passed",
+              "exit_code": 0,
+              "artifact_id": "check-1"
+            },
+            {
+              "id": "frontend-build",
+              "required": true,
+              "status": "passed",
+              "exit_code": 0,
+              "artifact_id": "check-2"
+            }
+          ]
+        }
+      ],
+      "created_at": "2026-10-19T21:58:46.446+08:00"
+    }
+  },
+  "checks": {
+    "cli_submit_and_get": "passed",
+    "same_uuid_same_task": "passed",
+    "same_uuid_changed_commit_http409": "passed",
+    "missing_required_checks_http400": "passed",
+    "unauthenticated_run_http401": "passed",
+    "public_generic_detail_http404": "passed",
+    "registered_artifacts_downloaded": "passed"
+  },
+  "finished_at": "2026-10-19T14:00:04.477508+00:00"
+}

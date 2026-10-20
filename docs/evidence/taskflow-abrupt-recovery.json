@@ -1,0 +1,136 @@
+{
+  "request": {
+    "run_id": "316a368c-4d29-4abe-b044-0b9eff318f6d",
+    "project_id": "change-workspace-demo",
+    "target_commit": "1750bd795b9a002fb4b0c2aa6a64946070796aa1",
+    "check_profile_id": "verify-change",
+    "check_profile_revision": "1",
+    "check_ids": [
+      "backend-test",
+      "frontend-test",
+      "frontend-build"
+    ],
+    "external_snapshot_id": "standalone-abrupt-recovery"
+  },
+  "interrupted_process": 234922,
+  "started_at": "2026-10-19T14:05:49.839777+00:00",
+  "before_interruption": {
+    "run_id": "316a368c-4d29-4abe-b044-0b9eff318f6d",
+    "project_id": "change-workspace-demo",
+    "target_commit": "1750bd795b9a002fb4b0c2aa6a64946070796aa1",
+    "check_profile_id": "verify-change",
+    "check_profile_revision": "1",
+    "external_snapshot_id": "standalone-abrupt-recovery",
+    "task_id": 3,
+    "created_at": "2026-10-19T22:05:49.824+08:00",
+    "check_ids": [
+      "backend-test",
+      "frontend-test",
+      "frontend-build"
+    ],
+    "status": "running",
+    "generation": 1,
+    "attempts": [
+      {
+        "generation": 1,
+        "started_at": "2026-10-19T14:05:49.901031066Z",
+        "verdict": "",
+        "checks": [
+          {
+            "id": "backend-test",
+            "required": true,
+            "status": "passed",
+            "exit_code": 0,
+            "artifact_id": "check-0"
+          },
+          {
+            "id": "frontend-test",
+            "required": true,
+            "status": "not_run"
+          },
+          {
+            "id": "frontend-build",
+            "required": true,
+            "status": "not_run"
+          }
+        ]
+      }
+    ]
+  },
+  "restarted_process": 253120,
+  "after_recovery": {
+    "run_id": "316a368c-4d29-4abe-b044-0b9eff318f6d",
+    "project_id": "change-workspace-demo",
+    "target_commit": "1750bd795b9a002fb4b0c2aa6a64946070796aa1",
+    "check_profile_id": "verify-change",
+    "check_profile_revision": "1",
+    "external_snapshot_id": "standalone-abrupt-recovery",
+    "task_id": 3,
+    "created_at": "2026-10-19T22:05:49.824+08:00",
+    "check_ids": [
+      "backend-test",
+      "frontend-test",
+      "frontend-build"
+    ],
+    "status": "success",
+    "generation": 2,
+    "attempts": [
+      {
+        "generation": 1,
+        "started_at": "2026-10-19T14:05:49.901031066Z",
+        "finished_at": "2026-10-19T22:09:03.475249919+08:00",
+        "verdict": "incomplete",
+        "error": "recovered stale running verification",
+        "checks": [
+          {
+            "id": "backend-test",
+            "required": true,
+            "status": "passed",
+            "exit_code": 0,
+            "artifact_id": "check-0"
+          },
+          {
+            "id": "frontend-test",
+            "required": true,
+            "status": "not_run"
+          },
+          {
+            "id": "frontend-build",
+            "required": true,
+            "status": "not_run"
+          }
+        ]
+      },
+      {
+        "generation": 2,
+        "started_at": "2026-10-19T14:09:03.526622835Z",
+        "finished_at": "2026-10-19T14:11:36.340233998Z",
+        "verdict": "passed",
+        "checks": [
+          {
+            "id": "backend-test",
+            "required": true,
+            "status": "passed",
+            "exit_code": 0,
+            "artifact_id": "check-0"
+          },
+          {
+            "id": "frontend-test",
+            "required": true,
+            "status": "passed",
+            "exit_code": 0,
+            "artifact_id": "check-1"
+          },
+          {
+            "id": "frontend-build",
+            "required": true,
+            "status": "passed",
+            "exit_code": 0,
+            "artifact_id": "check-2"
+          }
+        ]
+      }
+    ]
+  },
+  "finished_at": "2026-10-19T14:11:38.016756+00:00"
+}

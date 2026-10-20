@@ -1,8 +1,7 @@
-name: ci
+name: legacy-full-stack-manual
 
 on:
-  push:
-  pull_request:
+  workflow_dispatch:
 
 jobs:
   test:
