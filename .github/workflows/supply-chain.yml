@@ -37,7 +37,7 @@ jobs:
           format: spdx-json
           output-file: taskflow.spdx.json
       - name: Critical vulnerability gate
-        uses: aquasecurity/trivy-action@0.33.1
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: taskflow-go:supply-chain-ci
           severity: CRITICAL
